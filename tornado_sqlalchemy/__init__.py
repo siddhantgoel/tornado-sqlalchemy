@@ -24,6 +24,16 @@ class SessionMixin(object):
 
     def on_finish(self):
         try:
+            self.session.commit()
+        finally:
+            self.session.close()
+
+    def send_error(self, status_code=500, **kwargs):
+        result = super(SessionMixin, self).send_error(status_code, **kwargs)
+
+        try:
             self.session.rollback()
         finally:
             self.session.close()
+
+        return result

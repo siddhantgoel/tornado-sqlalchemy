@@ -1,14 +1,14 @@
 from tornado.options import options
 from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler, Application
-from tornado_sqlalchemy import make_session_factory
+from tornado_sqlalchemy import make_session_factory, SessionMixin
 
 
 def do_something(session):
     pass
 
 
-class WebRequestHandler(RequestHandler):
+class WebRequestHandler(RequestHandler, SessionMixin):
     def get(self):
         with self.make_session() as session:
             do_something(session)

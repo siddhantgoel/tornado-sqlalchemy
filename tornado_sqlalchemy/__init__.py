@@ -6,11 +6,40 @@ from sqlalchemy.ext.declarative import declarative_base as _declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-async_pool = ThreadPoolExecutor(max_workers=5)
-
-
 class MissingFactoryError(Exception):
     pass
+
+
+class AsyncExecution(object):
+    _default_max_workers = 5
+
+    def __init__(self):
+        self._max_workers = self._default_max_workers
+        self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
+
+    def set_max_workers(self, count):
+        if self._pool:
+            self._pool.shutdown(wait=True)
+
+        self._max_workers = count
+        self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
+
+    def wrap_in_future(self, query):
+        """Wrap a `sqlalchemy.orm.query.Query` object into a
+        `concurrent.futures.Future` so that it can be yielded.
+
+        :param query: `sqlalchemy.orm.query.Query` object
+        :returns: `concurrent.futures.Future` object wrapping the given query
+        so that tornado can yield on it.
+        """
+        return self._pool.submit(query)
+
+
+_async_exec = AsyncExecution()
+
+set_max_workers = _async_exec.set_max_workers
+
+wrap_in_future = _async_exec.wrap_in_future
 
 
 def make_session_factory(database_url, pool_size, engine_events):
@@ -23,17 +52,6 @@ def make_session_factory(database_url, pool_size, engine_events):
     factory.configure(bind=engine)
 
     return factory
-
-
-def wrap_in_future(query):
-    """Wrap a `sqlalchemy.orm.query.Query` object into a
-    `concurrent.futures.Future` so that it can be yielded.
-
-    :param query: `sqlalchemy.orm.query.Query` object
-    :returns: `concurrent.futures.Future` object wrapping the given query so
-    that tornado can yield on it.
-    """
-    return async_pool.submit(query)
 
 
 class SessionMixin(object):

@@ -1,8 +1,10 @@
+from contextlib import contextmanager
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
 
-class SessionMissingException(Exception):
+class MissingFactoryError(Exception):
     pass
 
 
@@ -19,18 +21,18 @@ def session_factory(database_url, pool_size, engine_events):
 
 
 class SessionMixin(object):
-    def prepare(self):
-        self.session = self.application.session_factory()
+    @contextmanager
+    def make_session(self):
+        if not hasattr(self.application, 'session_factory'):
+            raise MissingFactoryError()
 
-    def on_finish(self):
         try:
-            self.session.commit()
+            session = self.application.session_factory()
+
+            yield session
+        except:
+            session.rollback()
+        else:
+            session.commit()
         finally:
-            self.session.close()
-
-        return super(SessionMixin, self).on_finish()
-
-    def send_error(self, status_code=500, **kwargs):
-        self.session.rollback()
-
-        return super(SessionMixin, self).send_error(status_code, **kwargs)
+            session.close()

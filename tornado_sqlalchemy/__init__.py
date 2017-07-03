@@ -1,7 +1,11 @@
 from contextlib import contextmanager
+from concurrent.futures import ThreadPoolExecutor
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+
+
+async_pool = ThreadPoolExecutor(max_workers=5)
 
 
 class MissingFactoryError(Exception):
@@ -18,6 +22,13 @@ def make_session_factory(database_url, pool_size, engine_events):
     factory.configure(bind=engine)
 
     return factory
+
+
+def wrap_in_future(query):
+    """Wrap a sqlalchemy.orm.query.Query object into a Future so that it can be
+    yielded.
+    """
+    return async_pool.submit(query)
 
 
 class SessionMixin(object):

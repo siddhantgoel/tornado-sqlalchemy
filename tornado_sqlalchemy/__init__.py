@@ -8,7 +8,7 @@ class MissingFactoryError(Exception):
     pass
 
 
-def session_factory(database_url, pool_size, engine_events):
+def make_session_factory(database_url, pool_size, engine_events):
     engine = create_engine(database_url, pool_size=pool_size)
 
     for (name, listener) in engine_events:

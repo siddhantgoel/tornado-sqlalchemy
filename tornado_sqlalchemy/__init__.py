@@ -2,6 +2,7 @@ from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor
 
 from sqlalchemy import create_engine, event
+from sqlalchemy.ext.declarative import declarative_base as _declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
@@ -51,3 +52,9 @@ class SessionMixin(object):
             session.commit()
         finally:
             session.close()
+
+
+def declarative_base():
+    if not declarative_base._instance:
+        declarative_base._instance = _declarative_base()
+    return declarative_base._instance

@@ -25,8 +25,12 @@ def make_session_factory(database_url, pool_size, engine_events):
 
 
 def wrap_in_future(query):
-    """Wrap a sqlalchemy.orm.query.Query object into a Future so that it can be
-    yielded.
+    """Wrap a `sqlalchemy.orm.query.Query` object into a
+    `concurrent.futures.Future` so that it can be yielded.
+
+    :param query: `sqlalchemy.orm.query.Query` object
+    :returns: `concurrent.futures.Future` object wrapping the given query so
+    that tornado can yield on it.
     """
     return async_pool.submit(query)
 

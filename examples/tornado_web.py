@@ -31,20 +31,12 @@ class AsyncWebRequestHandler(RequestHandler, SessionMixin):
         self.write('Done!')
 
 
-class WebApplication(Application):
-    def __init__(self, *args, **kwargs):
-        self.session_factory = make_session_factory(options.database_url)
-
-        handlers = [
-            (r'/sync', SyncWebRequestHandler)
-            (r'/async', AsyncWebRequestHandler)
-        ]
-
-        settings = {'cookie_secret': 'hunter2'}
-
-        super(WebApplication, self).__init__(handlers, **settings)
-
-
 if __name__ == '__main__':
-    WebApplication().listen(8888)
+    session_factory = make_session_factory(options.database_url)
+
+    Application([
+        (r'/sync', SyncWebRequestHandler)
+        (r'/async', AsyncWebRequestHandler)
+    ], session_factory=session_factory).listen(8888)
+
     IOLoop.current().start()

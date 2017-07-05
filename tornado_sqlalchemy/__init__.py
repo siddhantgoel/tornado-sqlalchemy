@@ -17,8 +17,8 @@ class MissingFactoryError(Exception):
 class AsyncExecution(object):
     _default_max_workers = 5
 
-    def __init__(self):
-        self._max_workers = self._default_max_workers
+    def __init__(self, max_workers=None):
+        self._max_workers = max_workers or self._default_max_workers
         self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
 
     def set_max_workers(self, count):

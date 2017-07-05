@@ -6,6 +6,10 @@ from sqlalchemy.ext.declarative import declarative_base as _declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
+__all__ = ['SessionMixin', 'set_max_workers', 'wrap_in_future',
+           'make_session_factory', 'declarative_base']
+
+
 class MissingFactoryError(Exception):
     pass
 

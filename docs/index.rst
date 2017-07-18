@@ -19,5 +19,3 @@ and especially how `session handling`_ in SQLAlchemy_ works.
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _alembic: http://alembic.zzzcomputing.com/en/latest/
 .. _session handling: http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
-.. _entry points: http://www.tornadoweb.org/en/stable/web.html#entry-points
-.. _tornado Application: 

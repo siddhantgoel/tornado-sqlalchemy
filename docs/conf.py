@@ -167,6 +167,3 @@ texinfo_documents = [
      author, 'tornado-sqlalchemy', 'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

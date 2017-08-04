@@ -1,34 +1,37 @@
+from sqlalchemy import Column, BigInteger, String
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.options import options
-from tornado_sqlalchemy import (make_session_factory, SessionMixin,
-                                wrap_in_future)
+from tornado_sqlalchemy import (declarative_base, make_session_factory,
+                                SessionMixin, wrap_in_future)
 from tornado.web import RequestHandler, Application
 
-from app.models.user import User
+
+DeclarativeBase = declarative_base()
 
 
-def do_something(session):
-    pass
+class User(DeclarativeBase):
+    __tablename__ = 'users'
+
+    id = Column(BigInteger, primary_key=True)
+    username = Column(String(255), unique=True)
 
 
 class SyncWebRequestHandler(RequestHandler, SessionMixin):
     def get(self):
         with self.make_session() as session:
-            do_something(session)
+            count = session.query(User).count()
 
-        self.write('Done!')
+        self.write('{} users so far!'.format(count))
 
 
 class AsyncWebRequestHandler(RequestHandler, SessionMixin):
     @coroutine
     def get(self):
         with self.make_session() as session:
-            results = yield wrap_in_future(session.query(User).all)
+            count = yield wrap_in_future(session.query(User).count)
 
-            do_something(results)
-
-        self.write('Done!')
+        self.write('{} users so far!'.format(count))
 
 
 if __name__ == '__main__':

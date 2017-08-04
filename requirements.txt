@@ -27,6 +27,7 @@ six==1.10.0
 snowballstemmer==1.2.1
 Sphinx==1.6.3
 sphinx-autobuild==0.7.1
+sphinx-rtd-theme==0.2.4
 sphinxcontrib-websupport==1.0.1
 SQLAlchemy==1.1.11
 tornado==4.5.1

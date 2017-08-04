@@ -45,6 +45,7 @@ We are not trying to add another layer of abstraction. The only thing we're
 trying to do is provide a set of helper functions for applications that happen
 to use both Tornado and SQLAlchemy.
 
+====
 Why?
 ====
 
@@ -73,6 +74,7 @@ The intention here is to have answers to all three of these in a
 `standardized library`_ which can act as a central place for all the
 :strike:`bugs` features, and hopefully can establish best practices.
 
+====
 How?
 ====
 

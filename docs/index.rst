@@ -97,7 +97,7 @@ result.
 
 .. code-block:: python
 
-    >>> from tornado import gen
+    >>> from tornado.gen import coroutine
     >>> from tornado_sqlalchemy import SessionMixin, wrap_in_future
     >>>
     >>> class MyRequestHandler(RequestHandler, SessionMixin):

@@ -46,11 +46,12 @@ set_max_workers = _async_exec.set_max_workers
 wrap_in_future = _async_exec.wrap_in_future
 
 
-def make_session_factory(database_url, pool_size, engine_events):
+def make_session_factory(database_url, pool_size, engine_events=None):
     engine = create_engine(database_url, pool_size=pool_size)
 
-    for (name, listener) in engine_events:
-        event.listen(engine, name, listener)
+    if engine_events:
+        for (name, listener) in engine_events:
+            event.listen(engine, name, listener)
 
     factory = sessionmaker()
     factory.configure(bind=engine)

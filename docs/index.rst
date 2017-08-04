@@ -73,9 +73,64 @@ The intention here is to have answers to all three of these in a
 `standardized library`_ which can act as a central place for all the
 :strike:`bugs` features, and hopefully can establish best practices.
 
+How?
+====
+
+The API surface area of this library is extremely small. Here's how to start
+using it.
+
+Construct a `session_factory` using `make_session_factory` and pass it to your
+`Application` object.
+
+.. code-block:: python
+
+    >>> from tornado_sqlalchemy import make_session_factory
+    >>>
+    >>> factory = make_session_factory(database_url)
+    >>> my_app  Application(handlers, session_factory=factory)
+
+Add the `SessionMixin` to your request handlers, which makes the `make_session`
+available in the GET/POST/... methods you're defining. And to run database
+queries in the background, use the `wrap_in_future` function to wrap the
+SQLAlchemy Query_ into a Future_ object, which you can `yield` on to get the
+result.
+
+.. code-block:: python
+
+    >>> from tornado import gen
+    >>> from tornado_sqlalchemy import SessionMixin, wrap_in_future
+    >>>
+    >>> class MyRequestHandler(RequestHandler, SessionMixin):
+    ...     @coroutine
+    ...     def get(self):
+    ...         with self.make_session() as session:
+    ...             count = yield wrap_in_future(session.query(User).count)
+    ...
+    ...         self.write('{} users so far!'.format(count)
+
+To setup database migrations, make sure that your SQLAlchemy models are
+inheriting using the result from the `declarative_base` function provided.
+
+.. code-block:: python
+
+    >>> from sqlalchemy import Column, BigInteger, String
+    >>> from tornado_sqlalchemy import declarative_base
+    >>>
+    >>> DeclarativeBase = declarative_base()
+    >>>
+    >>> class User(DeclarativeBase):
+    >>>     id = Column(BigInteger, primary_key=True)
+    >>>     username = Column(String(255), unique=True)
+
+And use the same `DeclarativeBase` object in the `env.py` file that alembic is
+using.
+
+For a complete usage example, refer to the `examples/tornado_web.py`_.
+
 .. _alembic: http://alembic.zzzcomputing.com/en/latest/
 .. _connection and engine: http://docs.sqlalchemy.org/en/latest/core/connections.html
 .. _declarative_base: http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/api.html#sqlalchemy.ext.declarative.declarative_base
+.. _Future: https://docs.python.org/3/library/concurrent.futures.html#future-objects
 .. _ioloop: http://www.tornadoweb.org/en/stable/ioloop.html
 .. _Metadata: http://docs.sqlalchemy.org/en/latest/core/metadata.html#sqlalchemy.schema.MetaData
 .. _poorly suited for explicit asynchronous programming: https://stackoverflow.com/a/16503103/179729
@@ -85,3 +140,4 @@ The intention here is to have answers to all three of these in a
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _standardized library: https://xkcd.com/927/
 .. _tornado: http://tornadoweb.org
+.. _examples/tornado_web.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/tornado_web.py

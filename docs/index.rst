@@ -16,7 +16,7 @@ Installation
 
 .. code-block:: bash
 
-    $ pip install streaming_form_data
+    $ pip install tornado-sqlalchemy
 
 Background
 ==========

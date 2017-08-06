@@ -16,9 +16,12 @@ mccabe==0.6.1
 pathtools==0.1.2
 pkginfo==1.4.1
 port-for==0.3.1
+psycopg2==2.7.3
+py==1.4.34
 pycodestyle==2.3.1
 pyflakes==1.5.0
 Pygments==2.2.0
+pytest==3.2.0
 pytz==2017.2
 PyYAML==3.12
 requests==2.18.1
@@ -31,6 +34,7 @@ sphinx-rtd-theme==0.2.4
 sphinxcontrib-websupport==1.0.1
 SQLAlchemy==1.1.11
 tornado==4.5.1
+-e git+git@github.com:siddhantgoel/tornado-sqlalchemy.git@f9263af0a21d247181d8a5650319f13e56d4a4ae#egg=tornado_sqlalchemy
 twine==1.8.1
 urllib3==1.21.1
 watchdog==0.8.3

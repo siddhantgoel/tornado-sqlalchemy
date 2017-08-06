@@ -1,3 +1,4 @@
+from collections import namedtuple
 from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor
 
@@ -8,6 +9,20 @@ from sqlalchemy.orm import sessionmaker
 
 __all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']
+
+
+Default = namedtuple('Default', ['name', 'value'])
+
+
+defaults = [Default('async_execution_max_workers', 5),
+            Default('session_factory_pool_size', 5)]
+
+
+def default_value(name):
+    for default in defaults:
+        if default.name == name:
+            return default
+    raise ValueError('No default defined for {}'.format(name))
 
 
 class MissingFactoryError(Exception):
@@ -58,7 +73,7 @@ class SessionFactory(object):
     subscribe to session events
     """
 
-    def __init__(self, database_url, pool_size, engine_events=None,
+    def __init__(self, database_url, pool_size=None, engine_events=None,
                  session_events=None):
         self._database_url = database_url
         self._pool_size = pool_size
@@ -71,8 +86,12 @@ class SessionFactory(object):
         self._setup()
 
     def _setup(self):
-        self._engine = create_engine(self._database_url,
-                                     pool_size=self._pool_size)
+        if self._pool_size is not None:
+            kwargs = {'pool_size': self._pool_size}
+        else:
+            kwargs = {}
+
+        self._engine = create_engine(self._database_url, **kwargs)
 
         if self._engine_events:
             for (name, listener) in self._engine_events:
@@ -89,6 +108,10 @@ class SessionFactory(object):
                 event.listen(session, name, listener)
 
         return session
+
+    @property
+    def engine(self):
+        return self._engine
 
 
 class SessionMixin(object):
@@ -127,3 +150,6 @@ def declarative_base():
     if not declarative_base._instance:
         declarative_base._instance = _declarative_base()
     return declarative_base._instance
+
+
+declarative_base._instance = None

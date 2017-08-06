@@ -92,20 +92,19 @@ Construct a `session_factory` using `make_session_factory` and pass it to your
 
 Add the `SessionMixin` to your request handlers, which makes the `make_session`
 available in the GET/POST/... methods you're defining. And to run database
-queries in the background, use the `wrap_in_future` function to wrap the
-SQLAlchemy Query_ into a Future_ object, which you can `yield` on to get the
-result.
+queries in the background, use the `as_future` function to wrap the SQLAlchemy
+Query_ into a Future_ object, which you can `yield` on to get the result.
 
 .. code-block:: python
 
     >>> from tornado.gen import coroutine
-    >>> from tornado_sqlalchemy import SessionMixin, wrap_in_future
+    >>> from tornado_sqlalchemy import SessionMixin, as_future
     >>>
     >>> class MyRequestHandler(RequestHandler, SessionMixin):
     ...     @coroutine
     ...     def get(self):
     ...         with self.make_session() as session:
-    ...             count = yield wrap_in_future(session.query(User).count)
+    ...             count = yield as_future(session.query(User).count)
     ...
     ...         self.write('{} users so far!'.format(count)
 

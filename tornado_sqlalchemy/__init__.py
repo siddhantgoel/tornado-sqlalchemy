@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base as _declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-__all__ = ['SessionMixin', 'set_max_workers', 'wrap_in_future',
+__all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']
 
 
@@ -14,7 +14,13 @@ class MissingFactoryError(Exception):
     pass
 
 
-class AsyncExecution(object):
+class _AsyncExecution(object):
+    """Tiny wrapper around ThreadPoolExecutor. This class is not meant to be
+    instantiated externally, but internally we just use it as a wrapper around
+    ThreadPoolExecutor so we can control the pool size and make the
+    `as_future` function public.
+    """
+
     _default_max_workers = 5
 
     def __init__(self, max_workers=None):
@@ -28,7 +34,7 @@ class AsyncExecution(object):
         self._max_workers = count
         self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
 
-    def wrap_in_future(self, query):
+    def as_future(self, query):
         """Wrap a `sqlalchemy.orm.query.Query` object into a
         `concurrent.futures.Future` so that it can be yielded.
 
@@ -40,6 +46,18 @@ class AsyncExecution(object):
 
 
 class SessionFactory(object):
+    """SessionFactory is a wrapper around the functions that SQLAlchemy
+    provides. The intention here is to let the user work at the session level
+    instead of engines and connections.
+
+    :param database_url: Database URL
+    :param pool_size: Connection pool size
+    :param engine_events: List of (name, listener_function) tuples to subscribe
+    to engine events
+    :param session_events: List of (name, listener_function) tuples to
+    subscribe to session events
+    """
+
     def __init__(self, database_url, pool_size, engine_events=None,
                  session_events=None):
         self._database_url = database_url
@@ -92,11 +110,11 @@ class SessionMixin(object):
             session.close()
 
 
-_async_exec = AsyncExecution()
+_async_exec = _AsyncExecution()
 
 set_max_workers = _async_exec.set_max_workers
 
-wrap_in_future = _async_exec.wrap_in_future
+as_future = _async_exec.as_future
 
 
 def make_session_factory(database_url, pool_size, engine_events=None,

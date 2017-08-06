@@ -39,6 +39,40 @@ class AsyncExecution(object):
         return self._pool.submit(query)
 
 
+class SessionFactory(object):
+    def __init__(self, database_url, pool_size, engine_events=None,
+                 session_events=None):
+        self._database_url = database_url
+        self._pool_size = pool_size
+        self._engine_events = engine_events
+        self._session_events = session_events
+
+        self._engine = None
+        self._factory = None
+
+        self._setup()
+
+    def _setup(self):
+        self._engine = create_engine(self._database_url,
+                                     pool_size=self._pool_size)
+
+        if self._engine_events:
+            for (name, listener) in self._engine_events:
+                event.listen(self._engine, name, listener)
+
+        self._factory = sessionmaker()
+        self._factory.configure(bind=self._engine)
+
+    def make_session(self):
+        session = self._factory()
+
+        if self._session_events:
+            for (name, listener) in self._session_events:
+                event.listen(session, name, listener)
+
+        return session
+
+
 class SessionMixin(object):
     @contextmanager
     def make_session(self):
@@ -46,7 +80,7 @@ class SessionMixin(object):
             raise MissingFactoryError()
 
         try:
-            session = self.application.session_factory()
+            session = self.application.session_factory.make_session()
 
             yield session
         except:
@@ -65,17 +99,10 @@ set_max_workers = _async_exec.set_max_workers
 wrap_in_future = _async_exec.wrap_in_future
 
 
-def make_session_factory(database_url, pool_size, engine_events=None):
-    engine = create_engine(database_url, pool_size=pool_size)
-
-    if engine_events:
-        for (name, listener) in engine_events:
-            event.listen(engine, name, listener)
-
-    factory = sessionmaker()
-    factory.configure(bind=engine)
-
-    return factory
+def make_session_factory(database_url, pool_size, engine_events=None,
+                         session_events=None):
+    return SessionFactory(
+        database_url, pool_size, engine_events, session_events)
 
 
 def declarative_base():

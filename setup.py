@@ -13,7 +13,7 @@ def install_requires():
     ]
 
     if version_info.major == 2:
-        deps.append('futures >== 3.0.0')
+        deps.append('futures >= 3.0.0')
 
     return deps
 

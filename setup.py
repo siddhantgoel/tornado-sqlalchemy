@@ -6,7 +6,16 @@ with open('README.rst') as f:
     long_description = f.read()
 
 
-install_requires = ['futures >== 3.0.0'] if version_info.major == 2 else []
+def install_requires():
+    deps = [
+        'tornado >= 4.0',
+        'SQLAlchemy >= 1.0'
+    ]
+
+    if version_info.major == 2:
+        deps.append('futures >== 3.0.0')
+
+    return deps
 
 
 setup(
@@ -20,5 +29,5 @@ setup(
     url='https://github.com/siddhantgoel/tornado-sqlalchemy',
     packages=['tornado_sqlalchemy'],
     keywords=['tornado', 'sqlalchemy'],
-    install_requires=install_requires
+    install_requires=install_requires()
 )

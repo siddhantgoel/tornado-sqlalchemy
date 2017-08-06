@@ -1,4 +1,9 @@
-from unittest import mock, TestCase
+from unittest import TestCase
+
+try:
+    from unittest.mock import Mock
+except ImportError:
+    from mock import Mock
 
 from tornado_sqlalchemy import (declarative_base, MissingFactoryError,
                                 SessionFactory, SessionMixin)
@@ -51,7 +56,7 @@ class SessionMixinTestCase(TestCase):
     def test_mixin_ok(self):
         class GoodHandler(SessionMixin):
             def __init__(h_self):
-                h_self.application = mock.Mock()
+                h_self.application = Mock()
                 h_self.application.session_factory = self.factory
 
             def run(h_self):

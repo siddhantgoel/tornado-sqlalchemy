@@ -11,7 +11,7 @@ install_requires = ['futures >== 3.0.0'] if version_info.major == 2 else []
 
 setup(
     name='tornado_sqlalchemy',
-    version='0.1.0',
+    version='0.1.1',
     description='SQLAlchemy helpers for working in Tornado',
     long_description=long_description,
     author='Siddhant Goel',

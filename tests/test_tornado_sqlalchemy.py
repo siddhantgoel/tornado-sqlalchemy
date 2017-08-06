@@ -6,8 +6,12 @@ except ImportError:
     from mock import Mock
 
 from sqlalchemy import Column, BigInteger, String
-from tornado_sqlalchemy import (declarative_base, MissingFactoryError,
-                                SessionFactory, SessionMixin)
+from tornado_sqlalchemy import (
+    as_future, declarative_base, MissingFactoryError, make_session_factory,
+    SessionMixin)
+from tornado.gen import coroutine
+from tornado.web import Application, RequestHandler
+from tornado.testing import AsyncHTTPTestCase
 
 
 database_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
@@ -28,7 +32,7 @@ class User(Base):
 
 class BaseTestCase(TestCase):
     def setUp(self):
-        self.factory = SessionFactory(database_url)
+        self.factory = make_session_factory(database_url)
 
         Base.metadata.create_all(self.factory.engine)
 
@@ -51,7 +55,7 @@ class SessionMixinTestCase(BaseTestCase):
         class GoodHandler(SessionMixin):
             def __init__(h_self):
                 h_self.application = Mock()
-                h_self.application.session_factory = self.factory
+                h_self.application.settings = {'session_factory': self.factory}
 
             def run(h_self):
                 with h_self.make_session() as session:
@@ -62,10 +66,77 @@ class SessionMixinTestCase(BaseTestCase):
     def test_mixin_no_session_factory(self):
         class BadHandler(SessionMixin):
             def __init__(h_self):
-                h_self.application = None
+                h_self.application = Mock()
+                h_self.application.settings = {}
 
             def run(h_self):
                 with h_self.make_session() as session:
                     return session.query(User).count()
 
         self.assertRaises(MissingFactoryError, BadHandler().run)
+
+
+class RequestHandlersTestCase(AsyncHTTPTestCase):
+    def __init__(self, *args, **kwargs):
+        super(RequestHandlersTestCase, self).__init__(*args, **kwargs)
+
+        class WithoutMixinRequestHandler(RequestHandler):
+            def get(h_self):
+                with h_self.make_session() as session:
+                    count = session.query(User).count()
+
+                h_self.write(str(count))
+
+        class WithMixinRequestHandler(RequestHandler, SessionMixin):
+            def get(h_self):
+                with h_self.make_session() as session:
+                    count = session.query(User).count()
+
+                h_self.write(str(count))
+
+        class AsyncRequestHandler(RequestHandler, SessionMixin):
+            @coroutine
+            def get(h_self):
+                with h_self.make_session() as session:
+                    count = yield as_future(session.query(User).count)
+
+                h_self.write(str(count))
+
+        handlers = (
+            (r'/async', AsyncRequestHandler),
+            (r'/with-mixin', WithMixinRequestHandler),
+            (r'/without-mixin', WithoutMixinRequestHandler),
+        )
+
+        self._factory = make_session_factory(database_url)
+        self._application = Application(
+            handlers, session_factory=self._factory)
+
+    def setUp(self, *args, **kwargs):
+        super(RequestHandlersTestCase, self).setUp(*args, **kwargs)
+
+        Base.metadata.create_all(self._factory.engine)
+
+    def tearDown(self, *args, **kwargs):
+        Base.metadata.drop_all(self._factory.engine)
+
+        super(RequestHandlersTestCase, self).tearDown(*args, **kwargs)
+
+    def get_app(self):
+        return self._application
+
+    def test_async(self):
+        response = self.fetch('/async', method='GET')
+
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body.decode('utf-8'), '0')
+
+    def test_with_mixin(self):
+        response = self.fetch('/with-mixin', method='GET')
+
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body.decode('utf-8'), '0')
+
+    def test_without_mixin(self):
+        response = self.fetch('/without-mixin', method='GET')
+        self.assertEqual(response.code, 500)

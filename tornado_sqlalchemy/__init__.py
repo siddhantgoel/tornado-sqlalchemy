@@ -117,11 +117,13 @@ class SessionFactory(object):
 class SessionMixin(object):
     @contextmanager
     def make_session(self):
-        if not hasattr(self.application, 'session_factory'):
+        factory = self.application.settings.get('session_factory')
+
+        if not factory:
             raise MissingFactoryError()
 
         try:
-            session = self.application.session_factory.make_session()
+            session = factory.make_session()
 
             yield session
         except:
@@ -140,7 +142,7 @@ set_max_workers = _async_exec.set_max_workers
 as_future = _async_exec.as_future
 
 
-def make_session_factory(database_url, pool_size, engine_events=None,
+def make_session_factory(database_url, pool_size=None, engine_events=None,
                          session_events=None):
     return SessionFactory(
         database_url, pool_size, engine_events, session_events)

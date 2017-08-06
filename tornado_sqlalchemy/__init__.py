@@ -39,6 +39,25 @@ class AsyncExecution(object):
         return self._pool.submit(query)
 
 
+class SessionMixin(object):
+    @contextmanager
+    def make_session(self):
+        if not hasattr(self.application, 'session_factory'):
+            raise MissingFactoryError()
+
+        try:
+            session = self.application.session_factory()
+
+            yield session
+        except:
+            session.rollback()
+            raise
+        else:
+            session.commit()
+        finally:
+            session.close()
+
+
 _async_exec = AsyncExecution()
 
 set_max_workers = _async_exec.set_max_workers
@@ -57,24 +76,6 @@ def make_session_factory(database_url, pool_size, engine_events=None):
     factory.configure(bind=engine)
 
     return factory
-
-
-class SessionMixin(object):
-    @contextmanager
-    def make_session(self):
-        if not hasattr(self.application, 'session_factory'):
-            raise MissingFactoryError()
-
-        try:
-            session = self.application.session_factory()
-
-            yield session
-        except:
-            session.rollback()
-        else:
-            session.commit()
-        finally:
-            session.close()
 
 
 def declarative_base():

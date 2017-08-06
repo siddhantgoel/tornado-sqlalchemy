@@ -5,9 +5,9 @@ try:
 except ImportError:
     from mock import Mock
 
+from sqlalchemy import Column, BigInteger, String
 from tornado_sqlalchemy import (declarative_base, MissingFactoryError,
                                 SessionFactory, SessionMixin)
-from sqlalchemy import Column, BigInteger, String
 
 
 database_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
@@ -26,7 +26,7 @@ class User(Base):
         self.username = username
 
 
-class SessionFactoryTestCase(TestCase):
+class BaseTestCase(TestCase):
     def setUp(self):
         self.factory = SessionFactory(database_url)
 
@@ -35,6 +35,8 @@ class SessionFactoryTestCase(TestCase):
     def tearDown(self):
         Base.metadata.drop_all(self.factory.engine)
 
+
+class SessionFactoryTestCase(BaseTestCase):
     def test_make_session(self):
         session = self.factory.make_session()
 
@@ -44,15 +46,7 @@ class SessionFactoryTestCase(TestCase):
         session.close()
 
 
-class SessionMixinTestCase(TestCase):
-    def setUp(self):
-        self.factory = SessionFactory(database_url)
-
-        Base.metadata.create_all(self.factory.engine)
-
-    def tearDown(self):
-        Base.metadata.drop_all(self.factory.engine)
-
+class SessionMixinTestCase(BaseTestCase):
     def test_mixin_ok(self):
         class GoodHandler(SessionMixin):
             def __init__(h_self):

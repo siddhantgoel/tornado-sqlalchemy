@@ -1,8 +1,12 @@
 from setuptools import setup
+from sys import version_info
 
 
 with open('README.rst') as f:
     long_description = f.read()
+
+
+install_requires = ['futures >== 3.0.0'] if version_info.major == 2 else []
 
 
 setup(
@@ -15,5 +19,6 @@ setup(
     license='MIT',
     url='https://github.com/siddhantgoel/tornado-sqlalchemy',
     packages=['tornado_sqlalchemy'],
-    keywords=['tornado', 'sqlalchemy']
+    keywords=['tornado', 'sqlalchemy'],
+    install_requires=install_requires
 )

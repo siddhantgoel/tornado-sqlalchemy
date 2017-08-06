@@ -86,10 +86,11 @@ Construct a `session_factory` using `make_session_factory` and pass it to your
 
 .. code-block:: python
 
+    >>> from tornado.web import Application
     >>> from tornado_sqlalchemy import make_session_factory
     >>>
     >>> factory = make_session_factory(database_url)
-    >>> my_app  Application(handlers, session_factory=factory)
+    >>> my_app = Application(handlers, session_factory=factory)
 
 Add the `SessionMixin` to your request handlers, which makes the `make_session`
 available in the GET/POST/... methods you're defining. And to run database

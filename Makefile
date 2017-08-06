@@ -1,6 +1,7 @@
 clean:
 	rm -f dist/*.tar.gz
 	rm -f dist/*.whl
+	rm -f dist/*.egg
 	rm -rf build
 
 build:

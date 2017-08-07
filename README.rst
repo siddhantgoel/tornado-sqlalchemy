@@ -13,5 +13,18 @@ tornado-sqlalchemy
 Python library aimed at integrating the tornado_ web framework and the
 SQLAlchemy_ database toolkit.
 
-.. _tornado: http://tornadoweb.org
+Installation
+------------
+
+.. code-block:: bash
+
+    $ pip install tornado-sqlalchemy
+
+Usage
+-----
+
+Please refer to the documentation on readthedocs_.
+
+.. _documentation: https://tornado-sqlalchemy.readthedocs.io
 .. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _tornado: http://tornadoweb.org

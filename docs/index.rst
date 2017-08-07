@@ -1,4 +1,3 @@
-==================
 tornado-sqlalchemy
 ==================
 
@@ -12,14 +11,14 @@ tornado-sqlalchemy
 SQLAlchemy_ database toolkit in the context of the tornado_ web framework.
 
 Installation
-============
+------------
 
 .. code-block:: bash
 
     $ pip install tornado-sqlalchemy
 
 Background
-==========
+----------
 
 tornado_ is slightly different from the rest of the web frameworks, in that it
 allows handling web requests asynchronously out of the box. At the same time,
@@ -46,7 +45,7 @@ trying to do is provide a set of helper functions for applications that happen
 to use both Tornado and SQLAlchemy.
 
 Why?
-====
+----
 
 .. role:: strike
     :class: strike
@@ -74,7 +73,7 @@ The intention here is to have answers to all three of these in a
 :strike:`bugs` features, and hopefully can establish best practices.
 
 Usage
-=====
+-----
 
 The API surface area of this library is extremely small. Here's how to start
 using it.

@@ -34,7 +34,7 @@ project has - **We assume that the user knows how to use the two frameworks.**
 
 Tornado is not like any other web framework, and to make use of the asynchronous
 functions it provides, it's necessary to understand how it really behaves
-underneath. In other words, you should **know** how `ioloop`_ works.
+underneath. In other words, you should **know** how ioloop_ works.
 
 Similarly, SQLAlchemy is an amazing framework, but I cannot stress how
 important it is to understand how `session handling`_ works and how to work with
@@ -78,8 +78,8 @@ Usage
 The API surface area of this library is extremely small. Here's how to start
 using it.
 
-Construct a `session_factory` using `make_session_factory` and pass it to your
-`Application` object.
+Construct a :code:`session_factory` using :code:`make_session_factory` and pass
+it to your :code:`Application` object.
 
 .. code-block:: python
 
@@ -89,10 +89,11 @@ Construct a `session_factory` using `make_session_factory` and pass it to your
     >>> factory = make_session_factory(database_url)
     >>> my_app = Application(handlers, session_factory=factory)
 
-Add the `SessionMixin` to your request handlers, which makes the `make_session`
-available in the GET/POST/... methods you're defining. And to run database
-queries in the background, use the `as_future` function to wrap the SQLAlchemy
-Query_ into a Future_ object, which you can `yield` on to get the result.
+Add the :code:`SessionMixin` to your request handlers, which makes the
+:code:`make_session` available in the GET/POST/... methods you're defining. And
+to run database queries in the background, use the :code:`as_future` function
+to wrap the SQLAlchemy Query_ into a Future_ object, which you can
+:code:`yield` on to get the result.
 
 .. code-block:: python
 
@@ -108,7 +109,7 @@ Query_ into a Future_ object, which you can `yield` on to get the result.
     ...         self.write('{} users so far!'.format(count)
 
 To setup database migrations, make sure that your SQLAlchemy models are
-inheriting using the result from the `declarative_base` function provided.
+inheriting using the result from the :code:`declarative_base` function provided.
 
 .. code-block:: python
 
@@ -121,8 +122,8 @@ inheriting using the result from the `declarative_base` function provided.
     >>>     id = Column(BigInteger, primary_key=True)
     >>>     username = Column(String(255), unique=True)
 
-And use the same `DeclarativeBase` object in the `env.py` file that alembic is
-using.
+And use the same :code:`DeclarativeBase` object in the :code:`env.py` file that
+alembic is using.
 
 For a complete usage example, refer to the `examples/tornado_web.py`_.
 

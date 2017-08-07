@@ -20,7 +20,7 @@ def install_requires():
 
 setup(
     name='tornado_sqlalchemy',
-    version='0.2.1',
+    version='0.2.2',
     description='SQLAlchemy helpers for working in Tornado',
     long_description=long_description,
     author='Siddhant Goel',

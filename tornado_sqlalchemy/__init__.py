@@ -58,12 +58,13 @@ class SessionFactory(object):
     subscribe to session events
     """
 
-    def __init__(self, database_url, pool_size=None, engine_events=None,
-                 session_events=None):
+    def __init__(self, database_url, pool_size=None, use_native_unicode=True,
+                 engine_events=None, session_events=None):
         self._database_url = database_url
         self._pool_size = pool_size
         self._engine_events = engine_events
         self._session_events = session_events
+        self._use_native_unicode = use_native_unicode
 
         self._engine = None
         self._factory = None
@@ -71,10 +72,12 @@ class SessionFactory(object):
         self._setup()
 
     def _setup(self):
+        kwargs = {
+            'use_native_unicode': self._use_native_unicode
+        }
+
         if self._pool_size is not None:
-            kwargs = {'pool_size': self._pool_size}
-        else:
-            kwargs = {}
+            kwargs['pool_size'] = self._pool_size
 
         self._engine = create_engine(self._database_url, **kwargs)
 
@@ -127,10 +130,13 @@ set_max_workers = _async_exec.set_max_workers
 as_future = _async_exec.as_future
 
 
-def make_session_factory(database_url, pool_size=None, engine_events=None,
+def make_session_factory(database_url,
+                         pool_size=None,
+                         use_native_unicode=True,
+                         engine_events=None,
                          session_events=None):
-    return SessionFactory(
-        database_url, pool_size, engine_events, session_events)
+    return SessionFactory(database_url, pool_size, use_native_unicode,
+                          engine_events, session_events)
 
 
 def declarative_base():

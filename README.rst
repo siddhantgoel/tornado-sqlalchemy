@@ -10,8 +10,8 @@ tornado-sqlalchemy
 .. image:: https://readthedocs.org/projects/tornado-sqlalchemy/badge/?version=latest
     :target: https://tornado-sqlalchemy.readthedocs.io/en/latest/
 
-Python library aimed at integrating the tornado_ web framework and the
-SQLAlchemy_ database toolkit.
+
+Python helpers for using SQLAlchemy_ with Tornado_.
 
 Installation
 ------------

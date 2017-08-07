@@ -7,8 +7,8 @@ tornado-sqlalchemy
 .. image:: https://badge.fury.io/py/tornado-sqlalchemy.svg
     :target: https://pypi.python.org/pypi/tornado-sqlalchemy
 
-**tornado-sqlalchemy** is a Python library aimed at simplifying the use of
-SQLAlchemy_ database toolkit in the context of the tornado_ web framework.
+**tornado-sqlalchemy** is a Python library aimed at providing a set of helpers
+for using the SQLAlchemy_ database toolkit in tornado_ web applications.
 
 Installation
 ------------
@@ -34,7 +34,7 @@ project has - **We assume that the user knows how to use the two frameworks.**
 
 Tornado is not like any other web framework, and to make use of the asynchronous
 functions it provides, it's necessary to understand how it really behaves
-underneath. In other words, you should **know** how ioloop_ works.
+underneath. In other words, you should **know** how that ioloop_ works.
 
 Similarly, SQLAlchemy is an amazing framework, but I cannot stress how
 important it is to understand how `session handling`_ works and how to work with
@@ -54,7 +54,7 @@ It seems like we should first answer the question - why does this library exist
 in the first place? What problems/use-cases is it tackling?
 
 - **Boilerplate** - Tornado does not bundle code to handle database connections.
-  That's fine, because it's not in the business of making database code anyway.
+  That's fine, because it's not in the business of writing database code anyway.
   Everyone ends up writing their own code. Code to establish database
   connections, initialize engines, get/teardown sessions, and so on.
 
@@ -65,7 +65,7 @@ in the first place? What problems/use-cases is it tackling?
 
 - **Database migrations** - Since you're using SQLAlchemy, you're probably also
   using alembic_ for database migrations. This again brings us to the point
-  about Boilerplate. If you're currently using SQLAlchemy with Tornado and have
+  about boilerplate. If you're currently using SQLAlchemy with Tornado and have
   migrations setup using alembic, you likely have custom code written somewhere.
 
 The intention here is to have answers to all three of these in a
@@ -74,9 +74,6 @@ The intention here is to have answers to all three of these in a
 
 Usage
 -----
-
-The API surface area of this library is extremely small. Here's how to start
-using it.
 
 Construct a :code:`session_factory` using :code:`make_session_factory` and pass
 it to your :code:`Application` object.
@@ -90,10 +87,17 @@ it to your :code:`Application` object.
     >>> my_app = Application(handlers, session_factory=factory)
 
 Add the :code:`SessionMixin` to your request handlers, which makes the
-:code:`make_session` available in the GET/POST/... methods you're defining. And
-to run database queries in the background, use the :code:`as_future` function
-to wrap the SQLAlchemy Query_ into a Future_ object, which you can
-:code:`yield` on to get the result.
+:code:`make_session` function available in the GET/POST/... methods you're
+defining. And to run database queries in the background, use the
+:code:`as_future` function to wrap the SQLAlchemy Query_ into a Future_ object,
+which you can :code:`yield` on to get the result.
+
+Since we're talking about :code:`yield`, please note that currently we don't
+support the native :code:`asyncio.Future` objects included in Python 3. So if
+your request handlers are :code:`async def`-ed, then calling :code:`await` on
+the :code:`future` that :code:`as_future` returns would likely not work. But the
+good news is that a later version of this library should support this use case
+as well.
 
 .. code-block:: python
 

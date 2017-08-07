@@ -1,4 +1,3 @@
-from collections import namedtuple
 from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor
 
@@ -9,20 +8,6 @@ from sqlalchemy.orm import sessionmaker
 
 __all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']
-
-
-Default = namedtuple('Default', ['name', 'value'])
-
-
-defaults = [Default('async_execution_max_workers', 5),
-            Default('session_factory_pool_size', 5)]
-
-
-def default_value(name):
-    for default in defaults:
-        if default.name == name:
-            return default
-    raise ValueError('No default defined for {}'.format(name))
 
 
 class MissingFactoryError(Exception):

@@ -25,6 +25,6 @@ Usage
 
 Please refer to the documentation on readthedocs_.
 
-.. _documentation: https://tornado-sqlalchemy.readthedocs.io
+.. _readthedocs: https://tornado-sqlalchemy.readthedocs.io
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _tornado: http://tornadoweb.org

@@ -29,7 +29,7 @@ Usage
     >>> from tornado.web import Application, RequestHandler
     >>> from tornado_sqlalchemy import as_future, make_session_factory, SessionMixin
     >>>
-    >>> factory = make_session_factory()
+    >>> factory = make_session_factory('postgres://user:password@host/database')
     >>>
     >>> class MyRequestHandler(RequestHandler, SessionMixin):
     ...     @coroutine

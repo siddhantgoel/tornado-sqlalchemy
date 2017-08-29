@@ -74,5 +74,8 @@ setup(
     url='https://github.com/siddhantgoel/tornado-sqlalchemy',
     packages=['tornado_sqlalchemy'],
     keywords=['tornado', 'sqlalchemy'],
-    install_requires=install_requires()
+    install_requires=install_requires(),
+    cmdclass={
+        'publish': PublishCommand
+    }
 )

@@ -51,7 +51,7 @@ class PublishCommand(Command):
         try:
             self.status('Removing previous builds…')
             rmtree(os.sep.join(('.', 'dist')))
-        except FileNotFoundError:
+        except OSError:
             pass
 
         self.status('Building Source and Wheel (universal) distribution…')

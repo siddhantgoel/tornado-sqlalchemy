@@ -1,5 +1,6 @@
 from contextlib import contextmanager
 from concurrent.futures import ThreadPoolExecutor
+import multiprocessing
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base as _declarative_base
@@ -21,10 +22,8 @@ class _AsyncExecution(object):
     `as_future` function public.
     """
 
-    _default_max_workers = 5
-
     def __init__(self, max_workers=None):
-        self._max_workers = max_workers or self._default_max_workers
+        self._max_workers = max_workers or multiprocessing.cpu_count()
         self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
 
     def set_max_workers(self, count):

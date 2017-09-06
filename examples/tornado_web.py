@@ -2,8 +2,8 @@ from sqlalchemy import Column, BigInteger, String
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.options import options
-from tornado_sqlalchemy import (declarative_base, make_session_factory,
-                                SessionMixin, wrap_in_future)
+from tornado_sqlalchemy import (as_future, declarative_base,
+                                make_session_factory, SessionMixin)
 from tornado.web import RequestHandler, Application
 
 
@@ -29,7 +29,7 @@ class AsyncWebRequestHandler(RequestHandler, SessionMixin):
     @coroutine
     def get(self):
         with self.make_session() as session:
-            count = yield wrap_in_future(session.query(User).count)
+            count = yield as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
 

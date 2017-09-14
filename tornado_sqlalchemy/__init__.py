@@ -5,7 +5,7 @@ import multiprocessing
 from sqlalchemy import create_engine, event
 from sqlalchemy.ext.declarative import declarative_base as _declarative_base
 from sqlalchemy.orm import sessionmaker
-
+from sqlalchemy.engine.url import make_url
 
 __all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']
@@ -60,7 +60,7 @@ class SessionFactory(object):
 
     def __init__(self, database_url, pool_size=None, use_native_unicode=True,
                  engine_events=None, session_events=None):
-        self._database_url = database_url
+        self._database_url = make_url(database_url)
         self._pool_size = pool_size
         self._engine_events = engine_events
         self._session_events = session_events
@@ -72,9 +72,9 @@ class SessionFactory(object):
         self._setup()
 
     def _setup(self):
-        kwargs = {
-            'use_native_unicode': self._use_native_unicode
-        }
+        kwargs = {}
+        if self._database_url.get_driver_name() == 'postgresql':
+            kwargs['use_native_unicode'] = self._use_native_unicode
 
         if self._pool_size is not None:
             kwargs['pool_size'] = self._pool_size

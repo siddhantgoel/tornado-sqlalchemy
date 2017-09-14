@@ -45,6 +45,11 @@ class FactoryTestCase(TestCase):
 
         self.assertTrue(factory)
 
+    def test_make_postgres_factory(self):
+        postgres_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
+        factory = make_session_factory(postgres_url)
+
+        self.assertTrue(factory)
 
 class SessionFactoryTestCase(BaseTestCase):
     def test_make_session(self):

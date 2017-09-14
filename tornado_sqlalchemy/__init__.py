@@ -7,7 +7,6 @@ from sqlalchemy.ext.declarative import declarative_base as _declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine.url import make_url
 
-
 __all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']
 
@@ -75,7 +74,7 @@ class SessionFactory(object):
     def _setup(self):
         kwargs = {}
         if self._database_url.get_driver_name() == 'postgresql':
-            kwargs['use_native_unicode']: self._use_native_unicode
+            kwargs['use_native_unicode'] = self._use_native_unicode
 
         if self._pool_size is not None:
             kwargs['pool_size'] = self._pool_size

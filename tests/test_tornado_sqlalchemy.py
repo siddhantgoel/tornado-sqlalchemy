@@ -14,6 +14,7 @@ from tornado.web import Application, RequestHandler
 from tornado.testing import AsyncHTTPTestCase
 
 database_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
+mysql_url = 'mysql://mysql_user:mysql_pass@localhost/tornado_sqlalchemy'
 
 Base = declarative_base()
 
@@ -40,16 +41,15 @@ class BaseTestCase(TestCase):
 
 class FactoryTestCase(TestCase):
     def test_make_mysql_factoy(self):
-        mysql_url = 'mysql://mysql_user:mysql_pass@localhost/tornado_sqlalchemy'
         factory = make_session_factory(mysql_url)
 
         self.assertTrue(factory)
 
     def test_make_postgres_factory(self):
-        postgres_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
-        factory = make_session_factory(postgres_url)
+        factory = make_session_factory(database_url)
 
         self.assertTrue(factory)
+
 
 class SessionFactoryTestCase(BaseTestCase):
     def test_make_session(self):

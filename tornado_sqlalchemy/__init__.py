@@ -51,7 +51,8 @@ class SessionFactory(object):
 
     :param database_url: Database URL
     :param pool_size: Connection pool size
-    :param use_native_unicode: Enable/Disable native unicode support
+    :param use_native_unicode: Enable/Disable native unicode support. This is
+    only used in case the driver is psycopg2.
     :param engine_events: List of (name, listener_function) tuples to subscribe
     to engine events
     :param session_events: List of (name, listener_function) tuples to

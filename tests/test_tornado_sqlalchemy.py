@@ -13,7 +13,8 @@ from tornado.gen import coroutine
 from tornado.web import Application, RequestHandler
 from tornado.testing import AsyncHTTPTestCase
 
-database_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
+postgres_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
+
 mysql_url = 'mysql://mysql_user:mysql_pass@localhost/tornado_sqlalchemy'
 
 Base = declarative_base()
@@ -31,7 +32,7 @@ class User(Base):
 
 class BaseTestCase(TestCase):
     def setUp(self):
-        self.factory = make_session_factory(database_url)
+        self.factory = make_session_factory(postgres_url)
 
         Base.metadata.create_all(self.factory.engine)
 
@@ -41,14 +42,10 @@ class BaseTestCase(TestCase):
 
 class FactoryTestCase(TestCase):
     def test_make_mysql_factoy(self):
-        factory = make_session_factory(mysql_url)
-
-        self.assertTrue(factory)
+        self.assertTrue(make_session_factory(mysql_url))
 
     def test_make_postgres_factory(self):
-        factory = make_session_factory(database_url)
-
-        self.assertTrue(factory)
+        self.assertTrue(make_session_factory(postgres_url))
 
 
 class SessionFactoryTestCase(BaseTestCase):
@@ -118,7 +115,7 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
             (r'/without-mixin', WithoutMixinRequestHandler),
         )
 
-        self._factory = make_session_factory(database_url)
+        self._factory = make_session_factory(postgres_url)
         self._application = Application(
             handlers, session_factory=self._factory)
 

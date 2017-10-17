@@ -46,6 +46,26 @@ Documentation
 
 Documentation is available at `Read The Docs`_.
 
+
+Development
+-----------
+
+To work on this package, please make sure you have a working Python
+installation on your system.
+
+1. Create a virtualenv -
+   :code:`python -m venv venv && source venv/bin/activate`.
+
+2. Git clone the repository -
+   :code:`git clone https://github.com/siddhantgoel/tornado-sqlalchemy`
+
+3. Install the packages required for development -
+   :code:`pip install -r requirements/3.txt` (or `2.txt` if you're on Python 2)
+
+4. Install this package - :code:`pip install .`.
+
+5. You should now be able to run the test suite - :code:`py.test tests/`.
+
 .. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _tornado: http://tornadoweb.org

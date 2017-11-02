@@ -37,7 +37,7 @@ Usage
     ...         with self.make_session() as session:
     ...             count = yield as_future(session.query(UserModel).count)
     ...
-    ...         self.write('{} users so far!'.format(count)
+    ...         self.write('{} users so far!'.format(count))
     ...
     >>> app = Application(((r'/', MyRequestHandler),), session_factory=factory)
 

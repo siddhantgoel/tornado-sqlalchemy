@@ -105,12 +105,12 @@ as well.
     >>> from tornado_sqlalchemy import SessionMixin, as_future
     >>>
     >>> class MyRequestHandler(RequestHandler, SessionMixin):
-    >>>     @coroutine
-    >>>     def get(self):
-    >>>         with self.make_session() as session:
-    >>>             count = yield as_future(session.query(User).count)
-    >>>
-    >>>         self.write('{} users so far!'.format(count))
+    ...     @coroutine
+    ...     def get(self):
+    ...         with self.make_session() as session:
+    ...             count = yield as_future(session.query(User).count)
+    ...
+    ...         self.write('{} users so far!'.format(count))
 
 To setup database migrations, make sure that your SQLAlchemy models are
 inheriting using the result from the :code:`declarative_base` function provided.

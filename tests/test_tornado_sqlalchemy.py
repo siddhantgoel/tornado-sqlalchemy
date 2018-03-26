@@ -129,8 +129,13 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
 
                 h_self.write(str(count))
 
+        class UsesSelfSessionRequestHandler(SessionMixin, RequestHandler):
+            def get(h_self):
+                h_self.write(str(h_self.session.query(User).count()))
+
         handlers = (
             (r'/async', AsyncRequestHandler),
+            (r'/uses-self-session', UsesSelfSessionRequestHandler),
             (r'/with-mixin', WithMixinRequestHandler),
             (r'/without-mixin', WithoutMixinRequestHandler),
         )
@@ -167,3 +172,9 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
     def test_without_mixin(self):
         response = self.fetch('/without-mixin', method='GET')
         self.assertEqual(response.code, 500)
+
+    def test_uses_self_session(self):
+        response = self.fetch('/uses-self-session', method='GET')
+
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body.decode('utf-8'), '0')

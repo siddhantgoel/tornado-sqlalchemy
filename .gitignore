@@ -102,5 +102,8 @@ ENV/
 
 # End of https://www.gitignore.io/api/python
 
-#Pycharm
+# Pycharm
 .idea
+
+# This project
+*.sqlite3

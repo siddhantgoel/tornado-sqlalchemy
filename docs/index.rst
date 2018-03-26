@@ -26,8 +26,8 @@ making database operations asynchronous (especially when you put an ORM in the
 picture) is not that straight forward.
 
 Hence, the aim of this project is to provide a few helper functions which can
-help you handle your database operations easily in case you're combining the two
-libraries.
+help you handle your long-running database queries operations easily in case
+you're combining the two libraries.
 
 Before using this project, it's important to understand the main guideline this
 project has - **We assume that the user knows how to use the two frameworks.**
@@ -88,9 +88,13 @@ it to your :code:`Application` object.
 
 Add the :code:`SessionMixin` to your request handlers, which makes the
 :code:`make_session` function available in the GET/POST/... methods you're
-defining. And to run database queries in the background, use the
-:code:`as_future` function to wrap the SQLAlchemy Query_ into a Future_ object,
-which you can :code:`yield` on to get the result.
+defining. Additionally, it also provides a :code:`self.session` property, which
+(lazily) constructs and returns a new session object (which will be closed in
+the :code:`on_finish` Tornado entry point).
+
+To run database queries in the background, use the :code:`as_future` function to
+wrap the SQLAlchemy Query_ into a Future_ object, which you can :code:`yield` on
+to get the result.
 
 Since we're talking about :code:`yield`, please note that currently we don't
 support the native :code:`asyncio.Future` objects included in Python 3. So if
@@ -113,7 +117,7 @@ as well.
     ...         self.write('{} users so far!'.format(count))
 
 To setup database migrations, make sure that your SQLAlchemy models are
-inheriting using the result from the :code:`declarative_base` function provided.
+inheriting using the result from the provided :code:`declarative_base`.
 
 .. code-block:: python
 

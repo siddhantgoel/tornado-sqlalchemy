@@ -178,3 +178,12 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
 
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body.decode('utf-8'), '0')
+
+
+class DeclarativeBaseTestCase(TestCase):
+    def test_multiple_calls_return_the_same_instance(self):
+        first = declarative_base()
+        second = declarative_base()
+
+        self.assertEqual(first, second)
+        self.assertEqual(id(first), id(second))

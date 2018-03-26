@@ -17,6 +17,8 @@ postgres_url = 'postgres://t_sa:t_sa@localhost/t_sa'
 
 mysql_url = 'mysql://t_sa:t_sa@localhost/t_sa'
 
+sqlite_url = 'sqlite:///t_sa.sqlite3'
+
 Base = declarative_base()
 
 
@@ -60,6 +62,9 @@ class FactoryTestCase(TestCase):
 
     def test_make_postgres_factory(self):
         self._test_with_factory(make_session_factory(postgres_url))
+
+    def test_make_sqlite_factory(self):
+        self._test_with_factory(make_session_factory(sqlite_url))
 
 
 class SessionFactoryTestCase(BaseTestCase):

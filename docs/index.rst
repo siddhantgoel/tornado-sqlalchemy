@@ -104,7 +104,7 @@ as well.
     >>> from tornado.gen import coroutine
     >>> from tornado_sqlalchemy import SessionMixin, as_future
     >>>
-    >>> class MyRequestHandler(RequestHandler, SessionMixin):
+    >>> class MyRequestHandler(SessionMixin, RequestHandler):
     ...     @coroutine
     ...     def get(self):
     ...         with self.make_session() as session:

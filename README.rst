@@ -31,7 +31,7 @@ Usage
     >>>
     >>> factory = make_session_factory('postgres://user:password@host/database')
     >>>
-    >>> class MyRequestHandler(RequestHandler, SessionMixin):
+    >>> class MyRequestHandler(SessionMixin, RequestHandler):
     ...     @coroutine
     ...     def get(self):
     ...         with self.make_session() as session:

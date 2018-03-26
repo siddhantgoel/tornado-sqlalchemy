@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import multiprocessing
 
 from sqlalchemy import create_engine, event
-from sqlalchemy.ext.declarative import declarative_base as _declarative_base
+from sqlalchemy.ext.declarative import declarative_base as sa_declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine.url import make_url
 
@@ -171,10 +171,14 @@ def make_session_factory(database_url,
                           engine_events, session_events)
 
 
-def declarative_base():
-    if not declarative_base._instance:
-        declarative_base._instance = _declarative_base()
-    return declarative_base._instance
+class _declarative_base:
+    def __init__(self):
+        self._instance = None
+
+    def __call__(self):
+        if not self._instance:
+            self._instance = sa_declarative_base()
+        return self._instance
 
 
-declarative_base._instance = None
+declarative_base = _declarative_base()

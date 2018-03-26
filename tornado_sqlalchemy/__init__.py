@@ -74,6 +74,7 @@ class SessionFactory(object):
 
     def _setup(self):
         kwargs = {}
+
         if self._database_url.get_driver_name() == 'postgresql':
             kwargs['use_native_unicode'] = self._use_native_unicode
 
@@ -103,19 +104,16 @@ class SessionFactory(object):
         return self._engine
 
 
-class SessionMixin(object):
+class SessionMixin:
+    _session = None
+
     @contextmanager
     def make_session(self):
-        factory = self.application.settings.get('session_factory')
-
-        if not factory:
-            raise MissingFactoryError()
-
         try:
-            session = factory.make_session()
+            session = self._make_session()
 
             yield session
-        except:
+        except Exception:
             session.rollback()
             raise
         else:
@@ -123,12 +121,41 @@ class SessionMixin(object):
         finally:
             session.close()
 
+    def on_finish(self):
+        next_on_finish = None
+
+        try:
+            next_on_finish = super(SessionMixin, self).on_finish
+        except AttributeError:
+            pass
+
+        if self._session:
+            self._session.commit()
+            self._session.close()
+
+        if next_on_finish:
+            next_on_finish()
+
+    @property
+    def session(self):
+        if not self._session:
+            self._session = self._make_session()
+        return self._session
+
+    def _make_session(self):
+        factory = self.application.settings.get('session_factory')
+
+        if not factory:
+            raise MissingFactoryError()
+
+        return factory.make_session()
+
 
 _async_exec = _AsyncExecution()
 
-set_max_workers = _async_exec.set_max_workers
-
 as_future = _async_exec.as_future
+
+set_max_workers = _async_exec.set_max_workers
 
 
 def make_session_factory(database_url,

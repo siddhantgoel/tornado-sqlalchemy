@@ -13,9 +13,9 @@ from tornado.gen import coroutine
 from tornado.web import Application, RequestHandler
 from tornado.testing import AsyncHTTPTestCase
 
-postgres_url = 'postgres://postgres:@localhost/tornado_sqlalchemy'
+postgres_url = 'postgres://t_sa:t_sa@localhost/t_sa'
 
-mysql_url = 'mysql://mysql_user:mysql_pass@localhost/tornado_sqlalchemy'
+mysql_url = 'mysql://t_sa:t_sa@localhost/t_sa'
 
 Base = declarative_base()
 
@@ -24,7 +24,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(BigInteger, primary_key=True)
-    username = Column(String(255), unique=True)
+    username = Column(String(64), unique=True)
 
     def __init__(self, username):
         self.username = username
@@ -41,11 +41,25 @@ class BaseTestCase(TestCase):
 
 
 class FactoryTestCase(TestCase):
+    def _test_with_factory(self, factory):
+        self.assertTrue(factory)
+
+        Base.metadata.create_all(factory.engine)
+
+        session = factory.make_session()
+
+        self.assertTrue(session)
+        self.assertEqual(session.query(User).count(), 0)
+
+        session.close()
+
+        Base.metadata.drop_all(factory.engine)
+
     def test_make_mysql_factoy(self):
-        self.assertTrue(make_session_factory(mysql_url))
+        self._test_with_factory(make_session_factory(mysql_url))
 
     def test_make_postgres_factory(self):
-        self.assertTrue(make_session_factory(postgres_url))
+        self._test_with_factory(make_session_factory(postgres_url))
 
 
 class SessionFactoryTestCase(BaseTestCase):
@@ -54,6 +68,7 @@ class SessionFactoryTestCase(BaseTestCase):
 
         self.assertTrue(session)
         self.assertEqual(session.query(User).count(), 0)
+
         session.close()
 
 

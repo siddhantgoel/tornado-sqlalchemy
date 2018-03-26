@@ -109,17 +109,21 @@ class SessionMixin:
 
     @contextmanager
     def make_session(self):
+        session = None
+
         try:
             session = self._make_session()
 
             yield session
         except Exception:
-            session.rollback()
+            if session:
+                session.rollback()
             raise
         else:
             session.commit()
         finally:
-            session.close()
+            if session:
+                session.close()
 
     def on_finish(self):
         next_on_finish = None

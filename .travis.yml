@@ -15,9 +15,11 @@ matrix:
 
 services:
     - postgresql
+    - mysql
 
 before_script:
-    - psql -c 'CREATE DATABASE tornado_sqlalchemy;' -U postgres
+    - psql -U postgres < tests/travis/postgre.sql
+    - mysql --user=root --password=''  < tests/travis/my.sql
 
 install:
     - pip install --upgrade pip setuptools

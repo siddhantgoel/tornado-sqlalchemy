@@ -114,14 +114,14 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
 
                 h_self.write(str(count))
 
-        class WithMixinRequestHandler(RequestHandler, SessionMixin):
+        class WithMixinRequestHandler(SessionMixin, RequestHandler):
             def get(h_self):
                 with h_self.make_session() as session:
                     count = session.query(User).count()
 
                 h_self.write(str(count))
 
-        class AsyncRequestHandler(RequestHandler, SessionMixin):
+        class AsyncRequestHandler(SessionMixin, RequestHandler):
             @coroutine
             def get(h_self):
                 with h_self.make_session() as session:

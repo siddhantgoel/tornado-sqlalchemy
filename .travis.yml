@@ -1,11 +1,10 @@
 language: python
 
-matrix:
-    include:
-        - "3.3"
-        - "3.4"
-        - "3.5"
-        - "3.6"
+python:
+    - "3.3"
+    - "3.4"
+    - "3.5"
+    - "3.6"
 
 services:
     - postgresql

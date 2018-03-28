@@ -16,15 +16,12 @@ with codecs.open(os.path.join(pwd, 'README.rst'), encoding='utf-8') as f:
 
 
 def install_requires():
-    deps = [
+    assert sys.version_info.major > 2, 'Sorry, Python 2 is not supported'
+
+    return [
         'tornado >= 4.0',
         'SQLAlchemy >= 1.0'
     ]
-
-    if sys.version_info.major == 2:
-        deps.append('futures >= 3.0.0')
-
-    return deps
 
 
 class PublishCommand(Command):

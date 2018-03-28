@@ -2,16 +2,10 @@ language: python
 
 matrix:
     include:
-        - python: "2.7"
-          env: REQUIREMENTS="requirements/2.txt"
-        - python: "3.3"
-          env: REQUIREMENTS="requirements/3.txt"
-        - python: "3.4"
-          env: REQUIREMENTS="requirements/3.txt"
-        - python: "3.5"
-          env: REQUIREMENTS="requirements/3.txt"
-        - python: "3.6"
-          env: REQUIREMENTS="requirements/3.txt"
+        - "3.3"
+        - "3.4"
+        - "3.5"
+        - "3.6"
 
 services:
     - postgresql
@@ -23,7 +17,7 @@ before_script:
 
 install:
     - pip install --upgrade pip setuptools
-    - pip install -r $REQUIREMENTS
+    - pip install -r requirements.txt
     - python setup.py install
 
 script:

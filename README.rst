@@ -62,7 +62,7 @@ installation on your system.
    :code:`git clone https://github.com/siddhantgoel/tornado-sqlalchemy`
 
 3. Install the packages required for development -
-   :code:`pip install -r requirements/3.txt` (or `2.txt` if you're on Python 2)
+   :code:`pip install -r requirements.txt`
 
 4. Install this package - :code:`pip install .`.
 

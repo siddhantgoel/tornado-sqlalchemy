@@ -209,5 +209,5 @@ class DeclarativeBaseTestCase(TestCase):
         first = declarative_base()
         second = declarative_base()
 
-        self.assertEqual(first, second)
+        self.assertTrue(first is second)
         self.assertEqual(id(first), id(second))

@@ -102,6 +102,30 @@ class SessionMixinTestCase(BaseTestCase):
 
         self.assertRaises(MissingFactoryError, BadHandler().run)
 
+    def test_distinct_sessions(self):
+        sessions = set()
+
+        class Handler(SessionMixin):
+            def __init__(h_self):
+                h_self.application = Mock()
+                h_self.application.settings = {'session_factory': self.factory}
+
+            def run(h_self):
+                session = h_self.session
+
+                sessions.add(id(session))
+                value = session.query(User).count()
+
+                session.commit()
+                session.close()
+
+                return value
+
+        Handler().run()
+        Handler().run()
+
+        self.assertEqual(len(sessions), 2)
+
 
 class RequestHandlersTestCase(AsyncHTTPTestCase):
     def __init__(self, *args, **kwargs):

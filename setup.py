@@ -51,10 +51,9 @@ class PublishCommand(Command):
         except OSError:
             pass
 
-        self.status('Building Source and Wheel (universal) distribution…')
+        self.status('Building Source and Wheel distribution…')
         os.system(
-            '{0} setup.py sdist bdist_wheel --universal'.format(
-                sys.executable))
+            '{0} setup.py sdist bdist_wheel'.format(sys.executable))
 
         self.status('Uploading the package to PyPi via Twine…')
         os.system('twine upload dist/*')
@@ -64,7 +63,7 @@ class PublishCommand(Command):
 
 setup(
     name='tornado_sqlalchemy',
-    version='0.4.0',
+    version='0.4.1',
     description='SQLAlchemy helpers for working in Tornado',
     long_description=long_description,
     author='Siddhant Goel',

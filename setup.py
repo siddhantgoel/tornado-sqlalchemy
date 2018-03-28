@@ -64,7 +64,7 @@ class PublishCommand(Command):
 
 setup(
     name='tornado_sqlalchemy',
-    version='0.3.3',
+    version='0.4.0',
     description='SQLAlchemy helpers for working in Tornado',
     long_description=long_description,
     author='Siddhant Goel',

@@ -107,3 +107,4 @@ ENV/
 
 # This project
 *.sqlite3
+.pytest_cache

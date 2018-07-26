@@ -4,7 +4,7 @@ tornado-sqlalchemy
 .. image:: https://badge.fury.io/py/tornado-sqlalchemy.svg
     :target: https://pypi.python.org/pypi/tornado-sqlalchemy
 
-.. image:: https://travis-ci.org/siddhantgoel/tornado-sqlalchemy.svg?branch=master
+.. image:: https://travis-ci.org/siddhantgoel/tornado-sqlalchemy.svg?branch=stable
     :target: https://travis-ci.org/siddhantgoel/tornado-sqlalchemy
 
 .. image:: https://readthedocs.org/projects/tornado-sqlalchemy/badge/?version=latest

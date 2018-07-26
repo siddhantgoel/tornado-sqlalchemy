@@ -15,15 +15,6 @@ with codecs.open(os.path.join(pwd, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-def install_requires():
-    assert sys.version_info.major > 2, 'Sorry, Python 2 is not supported'
-
-    return [
-        'tornado >= 4.0',
-        'SQLAlchemy >= 1.0'
-    ]
-
-
 class PublishCommand(Command):
     """Support setup.py publish.
 
@@ -72,7 +63,11 @@ setup(
     url='https://github.com/siddhantgoel/tornado-sqlalchemy',
     packages=['tornado_sqlalchemy'],
     keywords=['tornado', 'sqlalchemy'],
-    install_requires=install_requires(),
+    install_requires=(
+        'tornado >= 4.0',
+        'SQLAlchemy >= 1.0',
+    ),
+    python_requires='>=3.3.0',
     cmdclass={
         'publish': PublishCommand
     }

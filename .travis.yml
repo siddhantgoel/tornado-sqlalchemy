@@ -15,10 +15,9 @@ before_script:
     - mysql --user=root --password=''  < tests/travis/my.sql
 
 install:
-    - pip install --upgrade pip setuptools
-    - pip install -r requirements.txt
-    - python setup.py install
+    - pip install pipenv
+    - pipenv install --dev --skip-lock
 
 script:
-    - flake8
-    - py.test tests/
+    - pipenv run flake8
+    - pipenv run py.test tests/

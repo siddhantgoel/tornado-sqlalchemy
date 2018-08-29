@@ -15,7 +15,7 @@ class MissingFactoryError(Exception):
     pass
 
 
-class _AsyncExecution(object):
+class _AsyncExecution:
     """Tiny wrapper around ThreadPoolExecutor. This class is not meant to be
     instantiated externally, but internally we just use it as a wrapper around
     ThreadPoolExecutor so we can control the pool size and make the
@@ -44,7 +44,7 @@ class _AsyncExecution(object):
         return self._pool.submit(query)
 
 
-class SessionFactory(object):
+class SessionFactory:
     """SessionFactory is a wrapper around the functions that SQLAlchemy
     provides. The intention here is to let the user work at the session level
     instead of engines and connections.

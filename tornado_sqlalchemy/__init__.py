@@ -20,6 +20,11 @@ class _AsyncExecution:
     instantiated externally, but internally we just use it as a wrapper around
     ThreadPoolExecutor so we can control the pool size and make the
     `as_future` function public.
+
+    Parameters
+    ----------
+    max_workers : int
+        Worker count for the ThreadPoolExecutor
     """
 
     def __init__(self, max_workers=None):
@@ -37,9 +42,16 @@ class _AsyncExecution:
         """Wrap a `sqlalchemy.orm.query.Query` object into a
         `concurrent.futures.Future` so that it can be yielded.
 
-        :param query: `sqlalchemy.orm.query.Query` object
-        :returns: `concurrent.futures.Future` object wrapping the given query
-        so that tornado can yield on it.
+        Parameters
+        ----------
+        query : sqlalchemy.orm.query.Query
+            SQLAlchemy query object to execute
+
+        Returns
+        -------
+            concurrent.futures.Future
+                A `Future` object wrapping the given query so that tornado can
+                yield on it
         """
         return self._pool.submit(query)
 
@@ -49,14 +61,21 @@ class SessionFactory:
     provides. The intention here is to let the user work at the session level
     instead of engines and connections.
 
-    :param database_url: Database URL
-    :param pool_size: Connection pool size
-    :param use_native_unicode: Enable/Disable native unicode support. This is
-    only used in case the driver is psycopg2.
-    :param engine_events: List of (name, listener_function) tuples to subscribe
-    to engine events
-    :param session_events: List of (name, listener_function) tuples to
-    subscribe to session events
+    Parameters
+    ----------
+        database_url : str
+            Database URL
+        pool_size : int
+            Connection pool size
+        use_native_unicode : bool
+            Enable/disable native unicode support; this is only used in case
+            the driver is psycopg2
+        engine_events : List[Tuple[str, Callable]]
+            List of (name, listener_function) tuples to subscribe to engine
+            events
+        session_events : List[Tuple[str, Callable]]
+            List of (name, listener_function) tuples to subscribe to session
+            events
     """
 
     def __init__(self, database_url, pool_size=None, use_native_unicode=True,

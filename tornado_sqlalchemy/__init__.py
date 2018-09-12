@@ -6,6 +6,8 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.declarative import declarative_base as sa_declarative_base
 from sqlalchemy.orm import sessionmaker
+from tornado.concurrent import Future, chain_future
+from tornado.ioloop import IOLoop
 
 __all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']
@@ -49,11 +51,25 @@ class _AsyncExecution:
 
         Returns
         -------
-            concurrent.futures.Future
+            tornado.concurrent.Future
                 A `Future` object wrapping the given query so that tornado can
-                yield on it
+                await/yield on it
         """
-        return self._pool.submit(query)
+        # concurrent.futures.Future is not compatible with the "new style"
+        # asyncio Future, and awaiting on such "old-style" futures does not
+        # work.
+        #
+        # tornado includes a `run_in_executor` function to help with this
+        # problem, but it's only included in version 5+. Hence, we copy a
+        # little bit of code here to handle this incompatibility.
+
+        old_future = self._pool.submit(query)
+        new_future = Future()
+
+        IOLoop.current().add_future(old_future,
+                                    lambda f: chain_future(f, new_future))
+
+        return new_future
 
 
 class SessionFactory:

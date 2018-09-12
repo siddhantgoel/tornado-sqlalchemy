@@ -145,11 +145,18 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
 
                 h_self.write(str(count))
 
-        class AsyncRequestHandler(SessionMixin, RequestHandler):
+        class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
             @coroutine
             def get(h_self):
                 with h_self.make_session() as session:
                     count = yield as_future(session.query(User).count)
+
+                h_self.write(str(count))
+
+        class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
+            async def get(h_self):
+                with h_self.make_session() as session:
+                    count = await as_future(session.query(User).count)
 
                 h_self.write(str(count))
 
@@ -158,7 +165,8 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
                 h_self.write(str(h_self.session.query(User).count()))
 
         handlers = (
-            (r'/async', AsyncRequestHandler),
+            (r'/gen-coroutines', GenCoroutinesRequestHandler),
+            (r'/native-coroutines', NativeCoroutinesRequestHandler),
             (r'/uses-self-session', UsesSelfSessionRequestHandler),
             (r'/with-mixin', WithMixinRequestHandler),
             (r'/without-mixin', WithoutMixinRequestHandler),
@@ -181,8 +189,14 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
     def get_app(self):
         return self._application
 
-    def test_async(self):
-        response = self.fetch('/async', method='GET')
+    def test_gen_coroutines(self):
+        response = self.fetch('/gen-coroutines', method='GET')
+
+        self.assertEqual(response.code, 200)
+        self.assertEqual(response.body.decode('utf-8'), '0')
+
+    def test_native_coroutines(self):
+        response = self.fetch('/native-coroutines', method='GET')
 
         self.assertEqual(response.code, 200)
         self.assertEqual(response.body.decode('utf-8'), '0')

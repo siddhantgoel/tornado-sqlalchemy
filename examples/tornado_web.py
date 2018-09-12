@@ -17,7 +17,7 @@ class User(DeclarativeBase):
     username = Column(String(255), unique=True)
 
 
-class SyncWebRequestHandler(RequestHandler, SessionMixin):
+class SyncWebRequestHandler(SessionMixin, RequestHandler):
     def get(self):
         with self.make_session() as session:
             count = session.query(User).count()
@@ -25,7 +25,7 @@ class SyncWebRequestHandler(RequestHandler, SessionMixin):
         self.write('{} users so far!'.format(count))
 
 
-class AsyncWebRequestHandler(RequestHandler, SessionMixin):
+class AsyncWebRequestHandler(SessionMixin, RequestHandler):
     @coroutine
     def get(self):
         with self.make_session() as session:
@@ -34,7 +34,7 @@ class AsyncWebRequestHandler(RequestHandler, SessionMixin):
         self.write('{} users so far!'.format(count))
 
 
-class UsesSelfSessionRequestHandler(RequestHandler, SessionMixin):
+class UsesSelfSessionRequestHandler(SessionMixin, RequestHandler):
     @coroutine
     def get(self):
         count = self.session.query(User).count()

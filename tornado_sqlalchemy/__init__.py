@@ -31,7 +31,7 @@ class _AsyncExecution:
 
     def __init__(self, max_workers=None):
         self._max_workers = max_workers or multiprocessing.cpu_count()
-        self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
+        self._pool = None
 
     def set_max_workers(self, count):
         if self._pool:
@@ -62,6 +62,9 @@ class _AsyncExecution:
         # tornado includes a `run_in_executor` function to help with this
         # problem, but it's only included in version 5+. Hence, we copy a
         # little bit of code here to handle this incompatibility.
+
+        if not self._pool:
+            self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
 
         old_future = self._pool.submit(query)
         new_future = Future()

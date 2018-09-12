@@ -67,7 +67,7 @@ setup(
         'tornado >= 4.0',
         'SQLAlchemy >= 1.0',
     ),
-    python_requires='>=3.4.0',
+    python_requires='>=3.5.0',
     cmdclass={
         'publish': PublishCommand
     },
@@ -76,7 +76,6 @@ setup(
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Topic :: Database',

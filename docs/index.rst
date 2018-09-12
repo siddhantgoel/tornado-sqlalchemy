@@ -20,29 +20,32 @@ Installation
 Background
 ----------
 
-tornado_ is slightly different from the rest of the web frameworks, in that it
-allows handling web requests asynchronously out of the box. At the same time,
-making database operations asynchronous (especially when you put an ORM in the
-picture) is not that straight forward.
+Tornado is an asynchronous web framework, meaning that it allows you to handle
+multiple web requests in parallel, and in case one request is waiting for a
+certain I/O operation to finish, Tornado would continue processing the second
+request in parallel.
 
-Hence, the aim of this project is to provide a few helper functions which can
-help you handle your long-running database queries operations easily in case
-you're combining the two libraries.
+ORMs are by definition a poor fit for this model. The author of SQLAlchemy
+explains this very nicely on StackOverflow_.
 
-Before using this project, it's important to understand the main guideline this
-project has - **We assume that the user knows how to use the two frameworks.**
+The TL;DR version is that since ORMs allow you to define relationships between
+your database models (for example using foreign keys), you can never be sure
+which property-access or function call would make a database round-trip.
 
-Tornado is not like any other web framework, and to make use of the asynchronous
-functions it provides, it's necessary to understand how it really behaves
-underneath. In other words, you should **know** how that ioloop_ works.
+So, given that,
 
-Similarly, SQLAlchemy is an amazing framework, but I cannot stress how
-important it is to understand how `session handling`_ works and how to work with
-`connection and engine`_ objects.
+1. this contradiction exists and we can't do anything about it,
+2. and that Tornado applications sometimes **do** end up doing database access,
 
-We are not trying to add another layer of abstraction. The only thing we're
-trying to do is provide a set of helper functions for applications that happen
-to use both Tornado and SQLAlchemy.
+the aim of this project is to provide a few helper functions which you can use
+to handle SQLAlchemy queries in your Tornado project, without adding another
+layer of abstraction.
+
+A prerequisite is a understanding of the following things -
+
+1. ioloop_,
+2. `session handling`_, and,
+3. `connection and engine`_ objects
 
 Why?
 ----
@@ -50,12 +53,11 @@ Why?
 .. role:: strike
     :class: strike
 
-It seems like we should first answer the question - why does this library exist
-in the first place? What problems/use-cases is it tackling?
+This library handles the following problems/use-cases -
 
 - **Boilerplate** - Tornado does not bundle code to handle database connections.
   That's fine, because it's not in the business of writing database code anyway.
-  Everyone ends up writing their own code. Code to establish database
+  Everyone ends up writing their own code - code to establish database
   connections, initialize engines, get/teardown sessions, and so on.
 
 - **Asynchronous query execution** - ORMs are `poorly suited for explicit
@@ -93,26 +95,26 @@ defining. Additionally, it also provides a :code:`self.session` property, which
 the :code:`on_finish` Tornado entry point).
 
 To run database queries in the background, use the :code:`as_future` function to
-wrap the SQLAlchemy Query_ into a Future_ object, which you can :code:`yield` on
-to get the result.
-
-Since we're talking about :code:`yield`, please note that currently we don't
-support the native :code:`asyncio.Future` objects included in Python 3. So if
-your request handlers are :code:`async def`-ed, then calling :code:`await` on
-the :code:`future` that :code:`as_future` returns would likely not work. But the
-good news is that a later version of this library should support this use case
-as well.
+wrap the SQLAlchemy Query_ into a Future_ object, which you can :code:`await` on
+or :code:`yield` to get the result.
 
 .. code-block:: python
 
     >>> from tornado.gen import coroutine
     >>> from tornado_sqlalchemy import SessionMixin, as_future
     >>>
-    >>> class MyRequestHandler(SessionMixin, RequestHandler):
+    >>> class OldCoroutineRequestHandler(SessionMixin, RequestHandler):
     ...     @coroutine
     ...     def get(self):
     ...         with self.make_session() as session:
     ...             count = yield as_future(session.query(User).count)
+    ...
+    ...         self.write('{} users so far!'.format(count))
+    ...
+    >>> class NativeCoroutineRequestHandler(SessionMixin, RequestHandler):
+    ...     async def get(self):
+    ...         with self.make_session() as session:
+    ...             count = await as_future(session.query(User).count)
     ...
     ...         self.write('{} users so far!'.format(count))
 
@@ -138,7 +140,8 @@ For a complete usage example, refer to the `examples/tornado_web.py`_.
 .. _alembic: http://alembic.zzzcomputing.com/en/latest/
 .. _connection and engine: http://docs.sqlalchemy.org/en/latest/core/connections.html
 .. _declarative_base: http://docs.sqlalchemy.org/en/latest/orm/extensions/declarative/api.html#sqlalchemy.ext.declarative.declarative_base
-.. _Future: https://docs.python.org/3/library/concurrent.futures.html#future-objects
+.. _examples/tornado_web.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/tornado_web.py
+.. _Future: http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 .. _ioloop: http://www.tornadoweb.org/en/stable/ioloop.html
 .. _Metadata: http://docs.sqlalchemy.org/en/latest/core/metadata.html#sqlalchemy.schema.MetaData
 .. _poorly suited for explicit asynchronous programming: https://stackoverflow.com/a/16503103/179729
@@ -146,6 +149,6 @@ For a complete usage example, refer to the `examples/tornado_web.py`_.
 .. _session handling: http://docs.sqlalchemy.org/en/latest/orm/session_basics.html#when-do-i-construct-a-session-when-do-i-commit-it-and-when-do-i-close-it
 .. _Session: http://docs.sqlalchemy.org/en/latest/orm/session_api.html#sqlalchemy.orm.session.Session
 .. _SQLAlchemy: http://www.sqlalchemy.org/
+.. _StackOverflow: https://stackoverflow.com/a/16503103/179729
 .. _standardized library: https://xkcd.com/927/
 .. _tornado: http://tornadoweb.org
-.. _examples/tornado_web.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/tornado_web.py

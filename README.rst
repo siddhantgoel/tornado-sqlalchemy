@@ -25,23 +25,42 @@ Usage
 
 .. code-block:: python
 
-    >>> from tornado.gen import coroutine
-    >>> from tornado.web import Application, RequestHandler
-    >>> from tornado_sqlalchemy import as_future, make_session_factory, SessionMixin
-    >>>
-    >>> factory = make_session_factory('postgres://user:password@host/database')
-    >>>
-    >>> class MyRequestHandler(SessionMixin, RequestHandler):
-    ...     @coroutine
-    ...     def get(self):
-    ...         with self.make_session() as session:
-    ...             count = yield as_future(session.query(UserModel).count)
-    ...
-    ...         # OR count = self.session.query(UserModel).count()
-    ...
-    ...         self.write('{} users so far!'.format(count))
-    ...
-    >>> app = Application(((r'/', MyRequestHandler),), session_factory=factory)
+    from tornado.gen import coroutine
+    from tornado.web import Application, RequestHandler
+    from tornado_sqlalchemy import as_future, make_session_factory, SessionMixin
+
+    class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
+        async def get(self):
+            with self.make_session() as session:
+                count = await as_future(session.query(UserModel).count)
+
+            self.write('{} users so far!'.format(count))
+
+    class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
+        @coroutine
+        def get(self):
+            with self.make_session() as session:
+                count = yield as_future(session.query(UserModel).count)
+
+            self.write('{} users so far!'.format(count))
+
+    class SynchronousRequestHandler(SessionMixin, RequestHandler):
+        def get(self):
+            with self.make_session() as session:
+                count = session.query(UserModel).count()
+
+            self.write('{} users so far!'.format(count))
+
+    handlers = (
+       (r'/native-coroutines', NativeCoroutinesRequestHandler),
+       (r'/gen-coroutines', GenCoroutinesRequestHandler),
+       (r'/sync', SynchronousRequestHandler),
+    )
+
+    app = Application(
+       handlers,
+       session_factory=make_session_factory('postgres://user:password@host/database')
+    )
 
 Documentation
 -------------
@@ -52,22 +71,19 @@ Documentation is available at `Read The Docs`_.
 Development
 -----------
 
-To work on this package, please make sure you have a working Python
-installation on your system.
+To work on this package, please make sure you have Python 3.5+ and pipenv_
+installed.
 
-1. Create a virtualenv -
-   :code:`python -m venv venv && source venv/bin/activate`.
-
-2. Git clone the repository -
+1. Git clone the repository -
    :code:`git clone https://github.com/siddhantgoel/tornado-sqlalchemy`
 
-3. Install the packages required for development -
-   :code:`pip install -r requirements.txt`
+2. Install the packages required for development -
+   :code:`pipenv install --dev`
 
-4. Install this package - :code:`pip install .`.
+3. That's basically it. You should now be able to run the test suite -
+   :code:`py.test tests/`.
 
-5. You should now be able to run the test suite - :code:`py.test tests/`.
-
+.. _pipenv: https://docs.pipenv.org/install/#installing-pipenv
 .. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _tornado: http://tornadoweb.org

@@ -1,10 +1,11 @@
-from sqlalchemy import Column, BigInteger, String
+from sqlalchemy import BigInteger, Column, String
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
 from tornado.options import options
-from tornado_sqlalchemy import (as_future, declarative_base,
-                                make_session_factory, SessionMixin)
-from tornado.web import RequestHandler, Application
+from tornado.web import Application, RequestHandler
+
+from tornado_sqlalchemy import (SessionMixin, as_future, declarative_base,
+                                make_session_factory)
 
 
 DeclarativeBase = declarative_base()

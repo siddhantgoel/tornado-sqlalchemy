@@ -1,11 +1,11 @@
-from contextlib import contextmanager
-from concurrent.futures import ThreadPoolExecutor
 import multiprocessing
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 
 from sqlalchemy import create_engine, event
+from sqlalchemy.engine.url import make_url
 from sqlalchemy.ext.declarative import declarative_base as sa_declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.engine.url import make_url
 
 __all__ = ['SessionMixin', 'set_max_workers', 'as_future',
            'make_session_factory', 'declarative_base']

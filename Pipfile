@@ -14,6 +14,7 @@ sqlalchemy = ">=1.0"
 "flake8" = "==3.5.0"
 pytest = "==3.6.3"
 twine = "==1.11.0"
+isort = "==4.3.4"
 
 [requires]
 python_version = "3.7"

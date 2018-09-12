@@ -1,17 +1,17 @@
 from unittest import TestCase
 
+from sqlalchemy import BigInteger, Column, String
+from tornado.gen import coroutine
+from tornado.testing import AsyncHTTPTestCase
+from tornado.web import Application, RequestHandler
+
+from tornado_sqlalchemy import (MissingFactoryError, SessionMixin, as_future,
+                                declarative_base, make_session_factory)
+
 try:
     from unittest.mock import Mock
 except ImportError:
     from mock import Mock
-
-from sqlalchemy import Column, BigInteger, String
-from tornado_sqlalchemy import (
-    as_future, declarative_base, MissingFactoryError, make_session_factory,
-    SessionMixin)
-from tornado.gen import coroutine
-from tornado.web import Application, RequestHandler
-from tornado.testing import AsyncHTTPTestCase
 
 postgres_url = 'postgres://t_sa:t_sa@localhost/t_sa'
 

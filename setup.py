@@ -5,7 +5,7 @@ import os
 import sys
 from shutil import rmtree
 
-from setuptools import setup, Command
+from setuptools import Command, setup
 
 
 pwd = os.path.abspath(os.path.dirname(__file__))
@@ -54,11 +54,11 @@ class PublishCommand(Command):
 
 setup(
     name='tornado_sqlalchemy',
-    version='0.4.1',
+    version='0.5.0',
     description='SQLAlchemy helpers for working in Tornado',
     long_description=long_description,
     author='Siddhant Goel',
-    author_email='siddhantgoel@gmail.com',
+    author_email='me@sgoel.org',
     license='MIT',
     url='https://github.com/siddhantgoel/tornado-sqlalchemy',
     packages=['tornado_sqlalchemy'],

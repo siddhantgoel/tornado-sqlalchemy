@@ -23,10 +23,10 @@ Background
 Tornado is an asynchronous web framework, meaning that it allows you to handle
 multiple web requests in parallel, and in case one request is waiting for a
 certain I/O operation to finish, Tornado would continue processing the second
-request in parallel.
+request.
 
-ORMs are by definition a poor fit for this model. The author of SQLAlchemy
-explains this very nicely on StackOverflow_.
+Getting ORMs to work with such a framework can be a little tricky. The author of
+SQLAlchemy explains this very nicely on StackOverflow_.
 
 The TL;DR version is that since ORMs allow you to define relationships between
 your database models (for example using foreign keys), you can never be sure

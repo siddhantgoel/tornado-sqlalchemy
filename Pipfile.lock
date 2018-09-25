@@ -226,10 +226,10 @@
         },
         "twine": {
             "hashes": [
-                "sha256:ce67d3e5352e5700762cfcde34ee54ed8cd4863ec0fd452b2aa5cdc451a6399e",
-                "sha256:d5553af5615180b0234885254c903ed8fa1c0010a790d878b5a65f8c974ffbf5"
+                "sha256:fad6f1251195f7ddd1460cb76d6ea106c93adb4e56c41e0da79658e56e547d2c",
+                "sha256:7d89bc6acafb31d124e6e5b295ef26ac77030bf098960c2a4c4e058335827c5c"
             ],
-            "version": "==1.12.0"
+            "version": "==1.12.1"
         },
         "urllib3": {
             "hashes": [

@@ -3,6 +3,7 @@ language: python
 python:
     - "3.5"
     - "3.6"
+    - "3.7-dev"
 
 services:
     - postgresql
@@ -14,7 +15,7 @@ before_script:
 
 install:
     - pip install pipenv
-    - pipenv install --dev --skip-lock
+    - pipenv install --dev
 
 script:
     - pipenv run flake8

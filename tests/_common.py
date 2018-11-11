@@ -5,7 +5,7 @@ from sqlalchemy import BigInteger, Column, String
 from tornado_sqlalchemy import declarative_base, make_session_factory
 
 
-postgres_url = 'postgres://t_sa:t_sa@localhost/t_sa'
+postgres_url = 'postgresql://t_sa:t_sa@localhost/t_sa'
 
 mysql_url = 'mysql://t_sa:t_sa@localhost/t_sa'
 

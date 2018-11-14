@@ -5,6 +5,9 @@ python:
     - "3.6"
     - "3.7-dev"
 
+env:
+    - ASYNC_TEST_TIMEOUT=30
+
 services:
     - postgresql
     - mysql

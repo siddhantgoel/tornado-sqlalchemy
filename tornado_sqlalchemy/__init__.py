@@ -10,8 +10,13 @@ from tornado.concurrent import Future, chain_future
 from tornado.ioloop import IOLoop
 
 
-__all__ = ['SessionMixin', 'set_max_workers', 'as_future',
-           'make_session_factory', 'declarative_base']
+__all__ = (
+    'as_future',
+    'declarative_base',
+    'make_session_factory',
+    'SessionMixin',
+    'set_max_workers',
+)
 
 
 class MissingFactoryError(Exception):
@@ -70,8 +75,9 @@ class _AsyncExecution:
         old_future = self._pool.submit(query)
         new_future = Future()
 
-        IOLoop.current().add_future(old_future,
-                                    lambda f: chain_future(f, new_future))
+        IOLoop.current().add_future(
+            old_future, lambda f: chain_future(f, new_future)
+        )
 
         return new_future
 
@@ -201,13 +207,14 @@ as_future = _async_exec.as_future
 set_max_workers = _async_exec.set_max_workers
 
 
-def make_session_factory(database_url,
-                         pool_size=None,
-                         use_native_unicode=True,
-                         engine_events=None,
-                         session_events=None):
-    return SessionFactory(database_url, pool_size, use_native_unicode,
-                          engine_events, session_events)
+def make_session_factory(
+        database_url, pool_size=None, use_native_unicode=True,
+        engine_events=None, session_events=None
+):
+    return SessionFactory(
+        database_url, pool_size, use_native_unicode,
+        engine_events, session_events
+    )
 
 
 class _declarative_base:

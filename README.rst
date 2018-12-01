@@ -71,19 +71,17 @@ Documentation is available at `Read The Docs`_.
 Development
 -----------
 
-To work on this package, please make sure you have Python 3.5+ and pipenv_
-installed.
+To work on this package, please make sure you have Python 3.5+ installed.
 
 1. Git clone the repository -
    :code:`git clone https://github.com/siddhantgoel/tornado-sqlalchemy`
 
 2. Install the packages required for development -
-   :code:`pipenv install --dev`
+   :code:`make install-deps`
 
 3. That's basically it. You should now be able to run the test suite -
    :code:`py.test tests/`.
 
-.. _pipenv: https://docs.pipenv.org/install/#installing-pipenv
 .. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _tornado: http://tornadoweb.org

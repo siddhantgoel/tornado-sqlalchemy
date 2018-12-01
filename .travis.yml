@@ -17,9 +17,9 @@ before_script:
     - mysql --user=root --password=''  < tests/travis/my.sql
 
 install:
-    - pip install pipenv
-    - pipenv install --dev
+    - make install-deps
+    - pip install .
 
 script:
-    - pipenv run flake8
-    - pipenv run py.test tests/
+    - flake8
+    - py.test tests/

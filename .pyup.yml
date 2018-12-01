@@ -1,3 +1,5 @@
+search: False
+
 requirements:
-    - Pipfile
-    - Pipfile.lock
+    - requirements.in
+    - requirements.dev.in

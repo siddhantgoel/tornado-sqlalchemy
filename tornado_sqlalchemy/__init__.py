@@ -1,6 +1,7 @@
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+import warnings
 
 from sqlalchemy import create_engine, event
 from sqlalchemy.engine.url import make_url
@@ -106,7 +107,20 @@ class SessionFactory:
 
     def __init__(self, database_url, pool_size=None, use_native_unicode=True,
                  engine_events=None, session_events=None):
+        if engine_events:
+            warnings.warn(
+                'engine_events is deprecated and will be removed in a future '
+                'version'
+            )
+
+        if session_events:
+            warnings.warn(
+                'session_events is deprecated and will be removed in a future '
+                'version'
+            )
+
         self._database_url = make_url(database_url)
+
         self._pool_size = pool_size
         self._engine_events = engine_events
         self._session_events = session_events

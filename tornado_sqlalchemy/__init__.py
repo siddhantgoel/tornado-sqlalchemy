@@ -106,7 +106,7 @@ class SessionFactory:
     """
 
     def __init__(self, database_url, pool_size=None, use_native_unicode=True,
-                 engine_events=None, session_events=None):
+                 engine_events=None, session_events=None, **kwargs):
         if engine_events:
             warnings.warn(
                 'engine_events is deprecated and will be removed in a future '
@@ -129,10 +129,9 @@ class SessionFactory:
         self._engine = None
         self._factory = None
 
-        self._setup()
+        self._setup(**kwargs)
 
-    def _setup(self):
-        kwargs = {}
+    def _setup(self, **kwargs):
 
         if self._database_url.get_driver_name() == 'postgresql':
             kwargs['use_native_unicode'] = self._use_native_unicode
@@ -223,11 +222,11 @@ set_max_workers = _async_exec.set_max_workers
 
 def make_session_factory(
         database_url, pool_size=None, use_native_unicode=True,
-        engine_events=None, session_events=None
+        engine_events=None, session_events=None, **kwargs
 ):
     return SessionFactory(
         database_url, pool_size, use_native_unicode,
-        engine_events, session_events
+        engine_events, session_events, **kwargs
     )
 
 

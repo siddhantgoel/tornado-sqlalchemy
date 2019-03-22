@@ -129,9 +129,9 @@ class SessionFactory:
         self._engine = None
         self._factory = None
 
-        self._setup(**kwargs)
+        self._setup(kwargs)
 
-    def _setup(self, **kwargs):
+    def _setup(self, kwargs):
 
         if self._database_url.get_driver_name() == 'postgresql':
             kwargs['use_native_unicode'] = self._use_native_unicode

@@ -1,15 +1,12 @@
 import multiprocessing
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
-import warnings
 
-from sqlalchemy import create_engine, event
-from sqlalchemy.engine.url import make_url
+from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base as sa_declarative_base
 from sqlalchemy.orm import sessionmaker
 from tornado.concurrent import Future, chain_future
 from tornado.ioloop import IOLoop
-
 
 __all__ = (
     'as_future',
@@ -87,75 +84,16 @@ class SessionFactory:
     """SessionFactory is a wrapper around the functions that SQLAlchemy
     provides. The intention here is to let the user work at the session level
     instead of engines and connections.
-
-    Parameters
-    ----------
-        database_url : str
-            Database URL
-        pool_size : int
-            Connection pool size
-        use_native_unicode : bool
-            Enable/disable native unicode support; this is only used in case
-            the driver is psycopg2
-        engine_events : List[Tuple[str, Callable]]
-            List of (name, listener_function) tuples to subscribe to engine
-            events
-        session_events : List[Tuple[str, Callable]]
-            List of (name, listener_function) tuples to subscribe to session
-            events
     """
 
-    def __init__(self, database_url, pool_size=None, use_native_unicode=True,
-                 engine_events=None, session_events=None, **kwargs):
-        if engine_events:
-            warnings.warn(
-                'engine_events is deprecated and will be removed in a future '
-                'version'
-            )
-
-        if session_events:
-            warnings.warn(
-                'session_events is deprecated and will be removed in a future '
-                'version'
-            )
-
-        self._database_url = make_url(database_url)
-
-        self._pool_size = pool_size
-        self._engine_events = engine_events
-        self._session_events = session_events
-        self._use_native_unicode = use_native_unicode
-
-        self._engine = None
-        self._factory = None
-
-        self._setup(kwargs)
-
-    def _setup(self, kwargs):
-
-        if self._database_url.get_driver_name() == 'postgresql':
-            kwargs['use_native_unicode'] = self._use_native_unicode
-
-        if self._pool_size is not None:
-            kwargs['pool_size'] = self._pool_size
-
-        self._engine = create_engine(self._database_url, **kwargs)
-
-        if self._engine_events:
-            for (name, listener) in self._engine_events:
-                event.listen(self._engine, name, listener)
+    def __init__(self, *args, **kwargs):
+        self._engine = create_engine(*args, **kwargs)
 
         self._factory = sessionmaker()
         self._factory.configure(bind=self._engine)
 
     def make_session(self):
-        session = self._factory()
-
-        if self._session_events:
-            for (name, listener) in self._session_events:
-                event.listen(session, name, listener)
-
-        return session
+        return self._factory()
 
     @property
     def engine(self):
@@ -220,14 +158,8 @@ as_future = _async_exec.as_future
 set_max_workers = _async_exec.set_max_workers
 
 
-def make_session_factory(
-        database_url, pool_size=None, use_native_unicode=True,
-        engine_events=None, session_events=None, **kwargs
-):
-    return SessionFactory(
-        database_url, pool_size, use_native_unicode,
-        engine_events, session_events, **kwargs
-    )
+def make_session_factory(*args, **kwargs):
+    return SessionFactory(*args, **kwargs)
 
 
 class _declarative_base:

@@ -1,6 +1,12 @@
 CHANGELOG
 =========
 
+v0.6.1
+------
+- Pass :code:`SessionMixin` arguments directly to :code:`create_engine`
+- Format code using :code:`black`
+- Add test cases for concurrent session usage
+
 v0.5.0
 ------
 - Avoid initialization the pool executor at import time

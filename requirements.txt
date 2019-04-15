@@ -5,6 +5,6 @@
 #    pip-compile requirements.in
 #
 mysqlclient==1.4.2.post1
-psycopg2-binary==2.7.7
-sqlalchemy==1.3.1
+psycopg2-binary==2.8.2
+sqlalchemy==1.3.3
 tornado==6.0.2

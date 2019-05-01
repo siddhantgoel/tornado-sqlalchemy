@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "tornado-sqlalchemy"
+version = "0.6.1"
+description = "SQLAlchemy helpers for working in Tornado"
+authors = ["Siddhant Goel <me@sgoel.org>"]
+license = "MIT"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.5",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Database",
+]
+keywords = ["tornado", "SQLAlchemy"]
+url = "https://github.com/siddhantgoel/tornado-sqlalchemy"
+
+[tool.poetry.dependencies]
+python = "^3.5"
+SQLAlchemy = "^1.3"
+tornado = "^6.0"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^3.7"
+mysqlclient = "^1.4"
+psycopg2-binary = "^2.8"
+pytest = "^4.4"
+black = {version = "^18.3-alpha.0",allows-prereleases = true,python = "^3.6"}
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

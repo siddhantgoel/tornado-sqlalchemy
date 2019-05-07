@@ -71,17 +71,19 @@ Documentation is available at `Read The Docs`_.
 Development
 -----------
 
-To work on this package, please make sure you have Python 3.5+ installed.
+To work on this package, please make sure you have Python 3.5+ and Poetry_
+installed.
 
 1. Git clone the repository -
    :code:`git clone https://github.com/siddhantgoel/tornado-sqlalchemy`
 
 2. Install the packages required for development -
-   :code:`make install-deps`
+   :code:`poetry install`
 
 3. That's basically it. You should now be able to run the test suite -
-   :code:`py.test tests/`.
+   :code:`poetry run py.test tests/`.
 
+.. _Poetry: https://poetry.eustace.io/
 .. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io
 .. _SQLAlchemy: http://www.sqlalchemy.org/
 .. _tornado: http://tornadoweb.org

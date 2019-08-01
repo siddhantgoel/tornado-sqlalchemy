@@ -31,6 +31,7 @@ psycopg2-binary = "^2.8"
 pytest = "^4.4"
 black = {version = "^18.3-alpha.0",allows-prereleases = true,python = "^3.6"}
 mypy = "^0.720.0"
+sqlalchemy-stubs = "^0.2.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

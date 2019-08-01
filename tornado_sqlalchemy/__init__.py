@@ -1,12 +1,15 @@
 import multiprocessing
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import Executor, ThreadPoolExecutor
 from contextlib import contextmanager
+from typing import Callable, Iterator, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base as sa_declarative_base
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.session import Session
 from tornado.concurrent import Future, chain_future
 from tornado.ioloop import IOLoop
+from tornado.web import Application
 
 __all__ = (
     'as_future',
@@ -26,39 +29,22 @@ class _AsyncExecution:
     instantiated externally, but internally we just use it as a wrapper around
     ThreadPoolExecutor so we can control the pool size and make the
     `as_future` function public.
-
-    Parameters
-    ----------
-    max_workers : int
-        Worker count for the ThreadPoolExecutor
     """
 
-    def __init__(self, max_workers=None):
-        self._max_workers = max_workers or multiprocessing.cpu_count()
-        self._pool = None
+    def __init__(self, max_workers: Optional[int] = None):
+        self._max_workers = (
+            max_workers or multiprocessing.cpu_count()
+        )  # type: int
+        self._pool = None  # type: Optional[Executor]
 
-    def set_max_workers(self, count):
+    def set_max_workers(self, count: int):
         if self._pool:
             self._pool.shutdown(wait=True)
 
         self._max_workers = count
         self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
 
-    def as_future(self, query):
-        """Wrap a `sqlalchemy.orm.query.Query` object into a
-        `concurrent.futures.Future` so that it can be yielded.
-
-        Parameters
-        ----------
-        query : sqlalchemy.orm.query.Query
-            SQLAlchemy query object to execute
-
-        Returns
-        -------
-            tornado.concurrent.Future
-                A `Future` object wrapping the given query so that tornado can
-                await/yield on it
-        """
+    def as_future(self, query: Callable) -> Future:
         # concurrent.futures.Future is not compatible with the "new style"
         # asyncio Future, and awaiting on such "old-style" futures does not
         # work.
@@ -71,7 +57,7 @@ class _AsyncExecution:
             self._pool = ThreadPoolExecutor(max_workers=self._max_workers)
 
         old_future = self._pool.submit(query)
-        new_future = Future()
+        new_future = Future()  # type: Future
 
         IOLoop.current().add_future(
             old_future, lambda f: chain_future(f, new_future)
@@ -101,10 +87,11 @@ class SessionFactory:
 
 
 class SessionMixin:
-    _session = None
+    _session = None  # type: Optional[Session]
+    application = None  # type: Optional[Application]
 
     @contextmanager
-    def make_session(self):
+    def make_session(self) -> Iterator[Session]:
         session = None
 
         try:
@@ -137,12 +124,15 @@ class SessionMixin:
             next_on_finish()
 
     @property
-    def session(self):
+    def session(self) -> Session:
         if not self._session:
             self._session = self._make_session()
         return self._session
 
-    def _make_session(self):
+    def _make_session(self) -> Session:
+        if not self.application:
+            raise MissingFactoryError()
+
         factory = self.application.settings.get('session_factory')
 
         if not factory:

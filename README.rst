@@ -1,14 +1,17 @@
 tornado-sqlalchemy
 ==================
 
-.. image:: https://badge.fury.io/py/tornado-sqlalchemy.svg
-    :target: https://pypi.python.org/pypi/tornado-sqlalchemy
-
 .. image:: https://travis-ci.org/siddhantgoel/tornado-sqlalchemy.svg?branch=stable
     :target: https://travis-ci.org/siddhantgoel/tornado-sqlalchemy
 
+.. image:: https://badge.fury.io/py/tornado-sqlalchemy.svg
+    :target: https://pypi.python.org/pypi/tornado-sqlalchemy
+
 .. image:: https://readthedocs.org/projects/tornado-sqlalchemy/badge/?version=latest
     :target: https://tornado-sqlalchemy.readthedocs.io/en/latest/
+
+.. image:: https://img.shields.io/pypi/pyversions/tornado-sqlalchemy.svg
+    :target: https://pypi.python.org/pypi/tornado-sqlalchemy
 
 
 Python helpers for using SQLAlchemy_ with Tornado_.

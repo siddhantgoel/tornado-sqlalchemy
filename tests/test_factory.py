@@ -39,15 +39,13 @@ class ConcurrencyTestCase(AsyncTestCase):
     def test_concurrent_requests_using_yield(self):
         factory = make_session_factory(postgres_url, pool_size=1)
 
-        sessions = [
-            factory.make_session() for _ in range(self.session_count)
-        ]
+        sessions = [factory.make_session() for _ in range(self.session_count)]
 
         yield [
             as_future(
                 lambda: session.execute(
                     'SELECT pg_sleep(:duration)',
-                    {'duration': self.sleep_duration}
+                    {'duration': self.sleep_duration},
                 )
             )
             for session in sessions
@@ -60,15 +58,13 @@ class ConcurrencyTestCase(AsyncTestCase):
     async def test_concurrent_requests_using_async(self):
         factory = make_session_factory(postgres_url, pool_size=1)
 
-        sessions = [
-            factory.make_session() for _ in range(self.session_count)
-        ]
+        sessions = [factory.make_session() for _ in range(self.session_count)]
 
         for session in sessions:
             await as_future(
                 lambda: session.execute(
                     'SELECT pg_sleep(:duration)',
-                    {'duration': self.sleep_duration}
+                    {'duration': self.sleep_duration},
                 )
             )
 

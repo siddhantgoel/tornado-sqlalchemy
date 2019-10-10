@@ -2,8 +2,7 @@ from tornado.gen import coroutine
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application, RequestHandler
 
-from tornado_sqlalchemy import (SessionMixin, as_future,
-                                make_session_factory)
+from tornado_sqlalchemy import SessionMixin, as_future, make_session_factory
 
 from ._common import User, Base, postgres_url
 
@@ -58,7 +57,8 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
 
         self._factory = make_session_factory(postgres_url)
         self._application = Application(
-            handlers, session_factory=self._factory)
+            handlers, session_factory=self._factory
+        )
 
     def setUp(self, *args, **kwargs):
         super(RequestHandlersTestCase, self).setUp(*args, **kwargs)

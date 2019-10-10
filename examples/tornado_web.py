@@ -4,8 +4,12 @@ from tornado.ioloop import IOLoop
 from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
-from tornado_sqlalchemy import (SessionMixin, as_future, declarative_base,
-                                make_session_factory)
+from tornado_sqlalchemy import (
+    SessionMixin,
+    as_future,
+    declarative_base,
+    make_session_factory,
+)
 
 
 DeclarativeBase = declarative_base()
@@ -55,11 +59,14 @@ if __name__ == '__main__':
 
     session_factory = make_session_factory(options.database_url)
 
-    Application([
-        (r'/sync', SynchronousRequestHandler),
-        (r'/gen-coroutines', GenCoroutinesRequestHandler),
-        (r'/native-coroutines', NativeCoroutinesRequestHandler),
-    ], session_factory=session_factory).listen(8888)
+    Application(
+        [
+            (r'/sync', SynchronousRequestHandler),
+            (r'/gen-coroutines', GenCoroutinesRequestHandler),
+            (r'/native-coroutines', NativeCoroutinesRequestHandler),
+        ],
+        session_factory=session_factory,
+    ).listen(8888)
 
     print('Listening on port 8888')
 

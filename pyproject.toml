@@ -33,6 +33,10 @@ black = {version = "^18.3-alpha.0",allows-prereleases = true,python = "^3.6"}
 mypy = "^0.720.0"
 sqlalchemy-stubs = "^0.2.0"
 
+[tool.black]
+line-length = 79
+skip-string-normalization = true
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"

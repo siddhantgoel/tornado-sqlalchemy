@@ -16,7 +16,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Database",
 ]
-keywords = ["tornado", "SQLAlchemy"]
+keywords = ["databases", "tornado", "sqlalchemy"]
 url = "https://github.com/siddhantgoel/tornado-sqlalchemy"
 
 [tool.poetry.dependencies]

@@ -17,7 +17,8 @@ classifiers = [
     "Topic :: Database",
 ]
 keywords = ["databases", "tornado", "sqlalchemy"]
-url = "https://github.com/siddhantgoel/tornado-sqlalchemy"
+repository = "https://github.com/siddhantgoel/tornado-sqlalchemy"
+documentation = "https://github.com/siddhantgoel/tornado-sqlalchemy"
 
 [tool.poetry.dependencies]
 python = "^3.5"
@@ -29,7 +30,7 @@ flake8 = "^3.7"
 mysqlclient = "^1.4"
 psycopg2-binary = "^2.8"
 pytest = "^4.4"
-black = {version = "^18.3-alpha.0",allows-prereleases = true,python = "^3.6"}
+black = {version = "^18.3-alpha.0",allow-prereleases = true,python = "^3.6"}
 mypy = "^0.720.0"
 sqlalchemy-stubs = "^0.2.0"
 

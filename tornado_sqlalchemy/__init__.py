@@ -4,23 +4,27 @@ from contextlib import contextmanager
 from typing import Callable, Iterator, Optional
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base as sa_declarative_base
+from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from tornado.concurrent import Future, chain_future
+from tornado.locks import Lock
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
 __all__ = (
     'as_future',
-    'declarative_base',
-    'make_session_factory',
     'SessionMixin',
     'set_max_workers',
+    'SQLAlchemy'
 )
 
 
 class MissingFactoryError(Exception):
+    pass
+
+
+class MissingDatabaseSettingError(Exception):
     pass
 
 
@@ -64,26 +68,6 @@ class _AsyncExecution:
         )
 
         return new_future
-
-
-class SessionFactory:
-    """SessionFactory is a wrapper around the functions that SQLAlchemy
-    provides. The intention here is to let the user work at the session level
-    instead of engines and connections.
-    """
-
-    def __init__(self, *args, **kwargs):
-        self._engine = create_engine(*args, **kwargs)
-
-        self._factory = sessionmaker()
-        self._factory.configure(bind=self._engine)
-
-    def make_session(self):
-        return self._factory()
-
-    @property
-    def engine(self):
-        return self._engine
 
 
 class SessionMixin:
@@ -132,13 +116,7 @@ class SessionMixin:
     def _make_session(self) -> Session:
         if not self.application:
             raise MissingFactoryError()
-
-        factory = self.application.settings.get('session_factory')
-
-        if not factory:
-            raise MissingFactoryError()
-
-        return factory.make_session()
+        return self.application.db.Session()
 
 
 _async_exec = _AsyncExecution()
@@ -148,18 +126,180 @@ as_future = _async_exec.as_future
 set_max_workers = _async_exec.set_max_workers
 
 
-def make_session_factory(*args, **kwargs):
-    return SessionFactory(*args, **kwargs)
+class SessionEx(Session):
+    """The SessionEx extends the default session system with bind selection.
+    """
+
+    def __init__(self, db, autocommit=False, autoflush=True, **options):
+        self.app = db.get_app()
+        bind = options.pop('bind', None) or db.engine
+        binds = options.pop('binds', db.get_binds())
+
+        Session.__init__(
+            self, autocommit=autocommit, autoflush=autoflush,
+            bind=bind, binds=binds, **options
+        )
+
+    def get_bind(self, mapper=None, clause=None):
+        """Return the engine or connection for a given model or
+        table, using the ``__bind_key__`` if it is set.
+        """
+        # mapper is None if someone tries to just get a connection
+        if mapper is not None:
+            try:
+                # SA >= 1.3
+                persist_selectable = mapper.persist_selectable
+            except AttributeError:
+                # SA < 1.3
+                persist_selectable = mapper.mapped_table
+
+            info = getattr(persist_selectable, 'info', {})
+            bind_key = info.get('bind_key')
+            if bind_key is not None:
+                return self.app.db.get_engine(bind=bind_key)
+        return Session.get_bind(self, mapper, clause)
 
 
-class _declarative_base:
-    def __init__(self):
-        self._instance = None
+class BindMeta(DeclarativeMeta):
+    def __init__(cls, name, bases, d):
+        bind_key = (
+            d.pop('__bind_key__', None)
+            or getattr(cls, '__bind_key__', None)
+        )
 
-    def __call__(self):
-        if not self._instance:
-            self._instance = sa_declarative_base()
-        return self._instance
+        super(BindMeta, cls).__init__(name, bases, d)
+
+        if bind_key is not None and getattr(cls, '__table__', None) is not None:
+            cls.__table__.info['bind_key'] = bind_key
 
 
-declarative_base = _declarative_base()
+class SQLAlchemy(object):
+
+    def __init__(self, app=None, sesion_options=None, engine_options=None):
+
+        self.Model = self.make_declarative_base()
+
+        self._engine_options = engine_options or {}
+        self._engine_lock = Lock()
+        self._engines = {}
+
+        self._sesion_options = sesion_options or {}
+
+        if app is not None:
+            self.init_app(app)
+        else:
+            self.app = None
+
+    def init_app(self, app):
+        self.app = app
+        self.app.db = self
+
+        bind = app.settings.get('sqlalchemy_database_uri')
+        binds = app.settings.get('sqlalchemy_binds')
+
+        if not bind and not binds:
+            raise MissingDatabaseSettingError()
+
+        engine_options = app.settings.get('sqlalchemy_engine_options') or {}
+        engine_options = engine_options.copy()
+        engine_options.update(self._engine_options)
+        self._engine_options = engine_options
+
+        self.Session = sessionmaker(class_=SessionEx, db=self, **self._sesion_options)
+
+    def get_app(self):
+        if not self.app:
+            raise RuntimeError('No application found. Please init_app first.')
+        return self.app
+
+    @property
+    def engine(self):
+        return self.get_engine()
+
+    @property
+    def metadata(self):
+        return self.Model.metadata
+
+    def create_engine(self, bind=None):
+        app = self.get_app()
+
+        if bind is None:
+            uri = app.settings['sqlalchemy_database_uri']
+        else:
+            binds = app.settings.get('sqlalchemy_binds') or ()
+            if bind not in binds:
+                raise RuntimeError('bind {} undefined.'.format(bind))
+            uri = binds[bind]
+
+        options = self._engine_options
+        return create_engine(uri, **options)
+
+    def get_engine(self, bind=None):
+        """Returns a specific engine. cached in self.engines """
+        # with self._engine_lock:
+        engine = self._engines.get(bind)
+
+        if engine is None:
+            engine = self.create_engine(bind)
+            self._engines[bind] = engine
+
+        return engine
+
+    def get_tables_for_bind(self, bind=None):
+        """Returns a list of all tables relevant for a bind."""
+        result = []
+        for table in self.Model.metadata.tables.values():
+            if table.info.get('bind_key') == bind:
+                result.append(table)
+        return result
+
+    def get_binds(self):
+        """Returns a dictionary with a table->engine mapping.
+
+        This is suitable for use of sessionmaker(binds=db.get_binds()).
+        """
+        app = self.get_app()
+        binds = [None] + list(app.settings.get('sqlalchemy_binds') or ())
+        retval = {}
+        for bind in binds:
+            engine = self.get_engine(bind)
+            tables = self.get_tables_for_bind(bind)
+            retval.update(dict((table, engine) for table in tables))
+        return retval
+
+    def _execute_for_all_tables(self, bind, operation, skip_tables=False):
+        app = self.get_app()
+
+        if bind == '__all__':
+            binds = [None] + list(app.settings.get('sqlalchemy_binds') or ())
+        elif isinstance(bind, str) or bind is None:
+            binds = [bind]
+        else:
+            binds = bind
+
+        for bind in binds:
+            extra = {}
+            if not skip_tables:
+                tables = self.get_tables_for_bind(bind)
+                extra['tables'] = tables
+            op = getattr(self.Model.metadata, operation)
+            op(bind=self.get_engine(bind), **extra)
+
+    def create_all(self, bind='__all__'):
+        """Creates all tables.
+        """
+        self._execute_for_all_tables(bind, 'create_all')
+
+    def drop_all(self, bind='__all__'):
+        """Drops all tables.
+        """
+        self._execute_for_all_tables(bind, 'drop_all')
+
+    def reflect(self, bind='__all__'):
+        """Reflects tables from the database.
+        """
+        self._execute_for_all_tables(bind, 'reflect', skip_tables=True)
+
+    def make_declarative_base(self):
+        base = declarative_base(metaclass=BindMeta)
+        return base

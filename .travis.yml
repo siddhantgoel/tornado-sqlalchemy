@@ -27,4 +27,5 @@ before_script:
 
 script:
     - make lint-flake8
+    - if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then make lint-black; fi
     - make test

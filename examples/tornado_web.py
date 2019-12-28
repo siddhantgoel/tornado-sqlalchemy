@@ -56,16 +56,16 @@ if __name__ == '__main__':
 
     assert options.database_url, "Need a database URL"
 
+    db.configure(uri=options.database_url)
+
     app = Application(
         [
             (r'/sync', SynchronousRequestHandler),
             (r'/gen-coroutines', GenCoroutinesRequestHandler),
             (r'/native-coroutines', NativeCoroutinesRequestHandler),
         ],
-        sqlalchemy_database_uri=options.database_url,
+        db=db,
     )
-
-    db.init_app(app)
 
     app.listen(8888)
     print('Listening on port 8888')

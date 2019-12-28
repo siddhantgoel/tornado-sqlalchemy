@@ -10,8 +10,7 @@ class SessionMixinTestCase(BaseTestCase):
         class GoodHandler(SessionMixin):
             def __init__(h_self):
                 h_self.application = Mock()
-                h_self.application.settings = {'sqlalchemy_database_uri': self.db_uri}
-                db.init_app(h_self.application)
+                h_self.application.settings = {'db': db}
 
             def run(h_self):
                 with h_self.make_session() as session:
@@ -26,7 +25,6 @@ class SessionMixinTestCase(BaseTestCase):
                 h_self.application.settings = {}
 
             def run(h_self):
-                db.init_app(h_self.application)
                 with h_self.make_session() as session:
                     return session.query(User).count()
 
@@ -37,9 +35,10 @@ class SessionMixinTestCase(BaseTestCase):
 
         class Handler(SessionMixin):
             def __init__(h_self):
+                db.configure(uri=self.db_uri)
+
                 h_self.application = Mock()
-                h_self.application.settings = {'sqlalchemy_database_uri': self.db_uri}
-                db.init_app(h_self.application)
+                h_self.application.settings = {'db': db}
 
             def run(h_self):
                 session = h_self.session

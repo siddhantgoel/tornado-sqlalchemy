@@ -16,16 +16,10 @@ class ConcurrencyTestCase(AsyncTestCase):
 
     def __init__(self, *args, **kwargs):
         super().__init__( *args, **kwargs)
+
+        db.configure(uri=mysql_url, engine_options={'echo': True})
         self.application = mock.Mock()
-        self.application.settings = {
-            'sqlalchemy_database_uri': mysql_url,
-            'sqlalchemy_engine_options': {
-                'echo': True,
-                # 'pool_size': 10,
-                # 'pool_timeout': 1
-            },
-        }
-        db.init_app(self.application)
+        self.application.settings = {'db': db}
 
     def setUp(self) -> None:
         super().setUp()

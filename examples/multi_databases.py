@@ -66,25 +66,28 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
 
 if __name__ == '__main__':
 
+    db.configure(
+        uri='mysql://t_sa:t_sa@localhost/t_sa',
+        binds={
+            'foo': 'mysql://t_sa:t_sa@localhost/t_sa_1',
+            'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
+        },
+        engine_options={
+            'pool_size': 2,
+            'pool_timeout': 10,
+            'max_overflow': 10
+        }
+    )
+
     app = Application(
         [
             (r'/sync', SynchronousRequestHandler),
             (r'/gen-coroutines', GenCoroutinesRequestHandler),
             (r'/native-coroutines', NativeCoroutinesRequestHandler),
         ],
-        sqlalchemy_database_uri='mysql://t_sa:t_sa@localhost/t_sa',
-        sqlalchemy_binds={
-            'foo': 'mysql://t_sa:t_sa@localhost/t_sa_1',
-            'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
-        },
-        sqlalchemy_engine_options={
-            'pool_size': 2,
-            'pool_timeout': 10,
-            'max_overflow': 10
-        },
+        db=db,
         autoreload=True
     )
-    db.init_app(app)
 
     db.create_all()
 

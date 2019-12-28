@@ -19,15 +19,16 @@ class MultiDatabasesTestCase(TestCase):
     def setUp(self, *args, **kwargs):
         super(MultiDatabasesTestCase, self).setUp(*args, **kwargs)
 
-        self._application = mock.Mock()
-        self._application.settings = {
-            'sqlalchemy_database_uri': mysql_url,
-            'sqlalchemy_binds': {
+        db.configure(
+            uri=mysql_url,
+            binds = {
                 'foo': mysql_url_1,
                 'bar': mysql_url_2,
-            }
-        }
-        db.init_app(self._application)
+            })
+
+        self._application = mock.Mock()
+        self._application.settings = {'db': db}
+
         db.create_all()
 
     def tearDown(self, *args, **kwargs):

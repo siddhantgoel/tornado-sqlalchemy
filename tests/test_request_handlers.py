@@ -55,13 +55,12 @@ class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
             (r'/without-mixin', WithoutMixinRequestHandler),
         )
 
+        db.configure(uri=mysql_url)
 
         self._application = Application(
             handlers,
-            sqlalchemy_database_uri=mysql_url
+            db=db
         )
-
-        db.init_app(self._application)
 
     def setUp(self, *args, **kwargs):
         super(RequestHandlersTestCase, self).setUp(*args, **kwargs)

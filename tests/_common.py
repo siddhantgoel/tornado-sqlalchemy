@@ -30,11 +30,13 @@ class User(db.Model):
 class BaseTestCase(TestCase):
     def setUp(self):
         self.db_uri = mysql_url
-        self.application = mock.Mock()
-        self.application.settings = {'sqlalchemy_database_uri': self.db_uri}
 
-        db.init_app(self.application)
-        db.Model.metadata.create_all(db.get_engine())
+        db.configure(uri=mysql_url)
+
+        self.application = mock.Mock()
+        self.application.settings = {'db': db}
+
+        db.create_all()
 
     def tearDown(self):
-        db.Model.metadata.drop_all(db.get_engine())
+        db.drop_all()

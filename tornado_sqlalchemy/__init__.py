@@ -115,7 +115,11 @@ class SessionMixin:
     def _make_session(self) -> Session:
         if not self.application:
             raise MissingFactoryError()
-        return self.application.db.sessionmaker()
+
+        db = self.application.settings.get('db')
+        if not db:
+            raise MissingDatabaseSettingError()
+        return db.sessionmaker()
 
 
 _async_exec = _AsyncExecution()
@@ -130,7 +134,7 @@ class SessionEx(Session):
     """
 
     def __init__(self, db, autocommit=False, autoflush=True, **options):
-        self.app = db.get_app()
+        self.db = db
         bind = options.pop('bind', None) or db.engine
         binds = options.pop('binds', db.get_binds())
 
@@ -155,7 +159,7 @@ class SessionEx(Session):
             info = getattr(persist_selectable, 'info', {})
             bind_key = info.get('bind_key')
             if bind_key is not None:
-                return self.app.db.get_engine(bind=bind_key)
+                return self.db.get_engine(bind=bind_key)
         return Session.get_bind(self, mapper, clause)
 
 
@@ -174,40 +178,25 @@ class BindMeta(DeclarativeMeta):
 
 class SQLAlchemy:
 
-    def __init__(self, app=None, session_options=None, engine_options=None):
+    def __init__(self, uri=None, binds=None, session_options=None, engine_options=None):
 
         self.Model = self.make_declarative_base()
-
-        self._engine_options = engine_options or {}
         self._engines = {}
 
-        self._session_options = session_options or {}
+        self.configure(
+            uri=uri,
+            binds=binds,
+            session_options=session_options,
+            engine_options=engine_options
+        )
 
-        if app is not None:
-            self.init_app(app)
-        else:
-            self.app = None
+    def configure(self, uri=None, binds=None, session_options=None, engine_options=None):
 
-    def init_app(self, app):
-        self.app = app
-        self.app.db = self
+        self.uri = uri
+        self.binds = binds or []
+        self._engine_options = engine_options or {}
 
-        bind = app.settings.get('sqlalchemy_database_uri')
-        binds = app.settings.get('sqlalchemy_binds')
-
-        if not bind and not binds:
-            raise MissingDatabaseSettingError()
-
-        engine_options = (app.settings.get('sqlalchemy_engine_options') or {}).copy()
-        engine_options.update(self._engine_options)
-        self._engine_options = engine_options
-
-        self.sessionmaker = sessionmaker(class_=SessionEx, db=self, **self._session_options)
-
-    def get_app(self):
-        if not self.app:
-            raise RuntimeError('No application found. Please init_app first.')
-        return self.app
+        self.sessionmaker = sessionmaker(class_=SessionEx, db=self, **(session_options or {}))
 
     @property
     def engine(self):
@@ -218,15 +207,16 @@ class SQLAlchemy:
         return self.Model.metadata
 
     def create_engine(self, bind=None):
-        app = self.get_app()
+
+        if not self.uri and not self.binds:
+            raise MissingDatabaseSettingError()
 
         if bind is None:
-            uri = app.settings['sqlalchemy_database_uri']
+            uri = self.uri
         else:
-            binds = app.settings.get('sqlalchemy_binds') or ()
-            if bind not in binds:
+            if bind not in self.binds:
                 raise RuntimeError('bind {} undefined.'.format(bind))
-            uri = binds[bind]
+            uri = self.binds[bind]
 
         options = self._engine_options
         return create_engine(uri, **options)
@@ -254,8 +244,7 @@ class SQLAlchemy:
 
         This is suitable for use of sessionmaker(binds=db.get_binds()).
         """
-        app = self.get_app()
-        binds = [None] + list(app.settings.get('sqlalchemy_binds') or ())
+        binds = [None] + list(self.binds)
         retval = {}
         for bind in binds:
             engine = self.get_engine(bind)
@@ -264,10 +253,9 @@ class SQLAlchemy:
         return retval
 
     def _execute_for_all_tables(self, bind, operation, skip_tables=False):
-        app = self.get_app()
 
         if bind == '__all__':
-            binds = [None] + list(app.settings.get('sqlalchemy_binds') or ())
+            binds = [None] + list(self.binds)
         elif isinstance(bind, str) or bind is None:
             binds = [bind]
         else:

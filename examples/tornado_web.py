@@ -4,11 +4,7 @@ from tornado.ioloop import IOLoop
 from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
-from tornado_sqlalchemy import (
-    SessionMixin,
-    as_future,
-    SQLAlchemy,
-)
+from tornado_sqlalchemy import SessionMixin, as_future, SQLAlchemy
 
 
 db = SQLAlchemy()

@@ -65,7 +65,6 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
 
 
 if __name__ == '__main__':
-
     db.configure(
         uri='mysql://t_sa:t_sa@localhost/t_sa',
         binds={
@@ -73,9 +72,9 @@ if __name__ == '__main__':
             'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
         },
         engine_options={
-            'pool_size': 2,
-            'pool_timeout': 10,
-            'max_overflow': 10,
+            'pool_size': 10,
+            'pool_timeout': 0,
+            'max_overflow': -1,
         },
     )
 
@@ -92,7 +91,6 @@ if __name__ == '__main__':
     db.create_all()
 
     session = db.sessionmaker()
-
     session.add(User(username='a'))
     session.commit()
     session.close()

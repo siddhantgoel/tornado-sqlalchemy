@@ -158,7 +158,7 @@ class SessionEx(Session):
             bind_key = info.get('bind_key')
             if bind_key is not None:
                 return self.db.get_engine(bind=bind_key)
-        return Session.get_bind(self, mapper, clause)
+        return super().get_bind(mapper, clause)
 
 
 class BindMeta(DeclarativeMeta):
@@ -180,7 +180,6 @@ class SQLAlchemy:
     def __init__(
         self, uri=None, binds=None, session_options=None, engine_options=None
     ):
-
         self.Model = self.make_declarative_base()
         self._engines = {}
 
@@ -194,7 +193,6 @@ class SQLAlchemy:
     def configure(
         self, uri=None, binds=None, session_options=None, engine_options=None
     ):
-
         self.uri = uri
         self.binds = binds or {}
         self._engine_options = engine_options or {}
@@ -212,7 +210,6 @@ class SQLAlchemy:
         return self.Model.metadata
 
     def create_engine(self, bind=None):
-
         if not self.uri and not self.binds:
             raise MissingDatabaseSettingError()
 
@@ -223,11 +220,10 @@ class SQLAlchemy:
                 raise RuntimeError('bind {} undefined.'.format(bind))
             uri = self.binds[bind]
 
-        options = self._engine_options
-        return create_engine(uri, **options)
+        return create_engine(uri, **self._engine_options)
 
     def get_engine(self, bind=None):
-        """Returns a specific engine. cached in self.engines """
+        """Returns a specific engine. cached in self._engines """
         engine = self._engines.get(bind)
 
         if engine is None:
@@ -258,7 +254,6 @@ class SQLAlchemy:
         return retval
 
     def _execute_for_all_tables(self, bind, operation, skip_tables=False):
-
         if bind == '__all__':
             binds = [None] + list(self.binds)
         elif isinstance(bind, str) or bind is None:

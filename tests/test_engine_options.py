@@ -39,7 +39,6 @@ class ConcurrencyTestCase(AsyncTestCase):
 
     @gen_test
     def test_concurrent_requests_using_yield(self):
-
         sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
         t = time.time()
@@ -60,7 +59,6 @@ class ConcurrencyTestCase(AsyncTestCase):
 
     @gen_test
     async def test_concurrent_requests_using_async(self):
-
         sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
         t = time.time()

@@ -40,10 +40,12 @@ class MultiDatabasesTestCase(TestCase):
 
         session.add(user1)
         session.add(user2)
+        session.commit()
         user_count = session.query(User).count()
 
         foo = Foo('b')
         session.add(foo)
+        session.commit()
         foo_count = session.query(Foo).count()
 
         session.close()

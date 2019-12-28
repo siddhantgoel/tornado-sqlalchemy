@@ -193,7 +193,7 @@ class SQLAlchemy:
     def configure(self, uri=None, binds=None, session_options=None, engine_options=None):
 
         self.uri = uri
-        self.binds = binds or []
+        self.binds = binds or {}
         self._engine_options = engine_options or {}
 
         self.sessionmaker = sessionmaker(class_=SessionEx, db=self, **(session_options or {}))

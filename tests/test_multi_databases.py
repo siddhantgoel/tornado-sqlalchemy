@@ -36,9 +36,9 @@ class MultiDatabasesTestCase(TestCase):
         super(MultiDatabasesTestCase, self).tearDown(*args, **kwargs)
 
     def test_add_objects(self):
-        session = db.Session()
+        session = db.sessionmaker()
         user1 = User('a')
-        user2 = User('a')
+        user2 = User('b')
 
         session.add(user1)
         session.add(user2)

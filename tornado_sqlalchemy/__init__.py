@@ -8,7 +8,6 @@ from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from tornado.concurrent import Future, chain_future
-from tornado.locks import Lock
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
@@ -116,7 +115,7 @@ class SessionMixin:
     def _make_session(self) -> Session:
         if not self.application:
             raise MissingFactoryError()
-        return self.application.db.Session()
+        return self.application.db.sessionmaker()
 
 
 _async_exec = _AsyncExecution()
@@ -173,17 +172,16 @@ class BindMeta(DeclarativeMeta):
             cls.__table__.info['bind_key'] = bind_key
 
 
-class SQLAlchemy(object):
+class SQLAlchemy:
 
-    def __init__(self, app=None, sesion_options=None, engine_options=None):
+    def __init__(self, app=None, session_options=None, engine_options=None):
 
         self.Model = self.make_declarative_base()
 
         self._engine_options = engine_options or {}
-        self._engine_lock = Lock()
         self._engines = {}
 
-        self._sesion_options = sesion_options or {}
+        self._session_options = session_options or {}
 
         if app is not None:
             self.init_app(app)
@@ -200,12 +198,11 @@ class SQLAlchemy(object):
         if not bind and not binds:
             raise MissingDatabaseSettingError()
 
-        engine_options = app.settings.get('sqlalchemy_engine_options') or {}
-        engine_options = engine_options.copy()
+        engine_options = (app.settings.get('sqlalchemy_engine_options') or {}).copy()
         engine_options.update(self._engine_options)
         self._engine_options = engine_options
 
-        self.Session = sessionmaker(class_=SessionEx, db=self, **self._sesion_options)
+        self.sessionmaker = sessionmaker(class_=SessionEx, db=self, **self._session_options)
 
     def get_app(self):
         if not self.app:
@@ -236,7 +233,6 @@ class SQLAlchemy(object):
 
     def get_engine(self, bind=None):
         """Returns a specific engine. cached in self.engines """
-        # with self._engine_lock:
         engine = self._engines.get(bind)
 
         if engine is None:
@@ -301,5 +297,4 @@ class SQLAlchemy(object):
         self._execute_for_all_tables(bind, 'reflect', skip_tables=True)
 
     def make_declarative_base(self):
-        base = declarative_base(metaclass=BindMeta)
-        return base
+        return declarative_base(metaclass=BindMeta)

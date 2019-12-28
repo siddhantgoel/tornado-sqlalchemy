@@ -21,7 +21,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = Column(BigInteger, primary_key=True)
-    username = Column(String(64))
+    username = Column(String(64), unique=True)
 
     def __init__(self, username):
         self.username = username

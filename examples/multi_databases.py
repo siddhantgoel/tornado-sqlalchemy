@@ -88,7 +88,7 @@ if __name__ == '__main__':
 
     db.create_all()
 
-    session = db.Session()
+    session = db.sessionmaker()
 
     session.add(User(username='a'))
     session.commit()

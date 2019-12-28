@@ -36,7 +36,7 @@ class ConcurrencyTestCase(AsyncTestCase):
         super().tearDown()
 
     def test_echo(self):
-        session = db.Session()
+        session = db.sessionmaker()
         count = session.query(User).count()
         session.close()
 
@@ -45,7 +45,7 @@ class ConcurrencyTestCase(AsyncTestCase):
     @gen_test
     def test_concurrent_requests_using_yield(self):
 
-        sessions = [db.Session() for _ in range(self.session_count)]
+        sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
         t = time.time()
         yield [
@@ -66,7 +66,7 @@ class ConcurrencyTestCase(AsyncTestCase):
     @gen_test
     async def test_concurrent_requests_using_async(self):
 
-        sessions = [db.Session() for _ in range(self.session_count)]
+        sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
         t = time.time()
 

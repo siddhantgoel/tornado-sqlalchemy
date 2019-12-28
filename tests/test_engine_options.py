@@ -10,12 +10,13 @@ from ._common import db, User, mysql_url
 set_max_workers(10)
 os.environ['ASYNC_TEST_TIMEOUT'] = '100'
 
+
 class ConcurrencyTestCase(AsyncTestCase):
     session_count = 3
     sleep_duration = 1
 
     def __init__(self, *args, **kwargs):
-        super().__init__( *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         db.configure(uri=mysql_url, engine_options={'echo': True})
         self.application = mock.Mock()

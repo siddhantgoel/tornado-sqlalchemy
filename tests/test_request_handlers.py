@@ -57,10 +57,7 @@ class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
 
         db.configure(uri=mysql_url)
 
-        self._application = Application(
-            handlers,
-            db=db
-        )
+        self._application = Application(handlers, db=db)
 
     def setUp(self, *args, **kwargs):
         super(RequestHandlersTestCase, self).setUp(*args, **kwargs)

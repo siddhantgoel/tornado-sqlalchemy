@@ -7,7 +7,7 @@ from tornado_sqlalchemy import (
     SessionMixin,
     as_future,
     set_max_workers,
-    SQLAlchemy
+    SQLAlchemy,
 )
 
 
@@ -32,7 +32,6 @@ class Foo(db.Model):
 
 
 class SynchronousRequestHandler(SessionMixin, RequestHandler):
-
     def get(self):
         with self.make_session() as session:
             count = session.query(User).count()
@@ -75,8 +74,8 @@ if __name__ == '__main__':
         engine_options={
             'pool_size': 2,
             'pool_timeout': 10,
-            'max_overflow': 10
-        }
+            'max_overflow': 10,
+        },
     )
 
     app = Application(
@@ -86,7 +85,7 @@ if __name__ == '__main__':
             (r'/native-coroutines', NativeCoroutinesRequestHandler),
         ],
         db=db,
-        autoreload=True
+        autoreload=True,
     )
 
     db.create_all()

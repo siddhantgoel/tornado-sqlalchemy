@@ -3,6 +3,7 @@ from sqlalchemy import Column, BigInteger, String
 
 from ._common import db, User, mysql_url, mysql_url_1, mysql_url_2
 
+
 class Foo(db.Model):
     __bind_key__ = 'foo'
     __tablename__ = 'foo'
@@ -15,16 +16,12 @@ class Foo(db.Model):
 
 
 class MultiDatabasesTestCase(TestCase):
-
     def setUp(self, *args, **kwargs):
         super(MultiDatabasesTestCase, self).setUp(*args, **kwargs)
 
         db.configure(
-            uri=mysql_url,
-            binds = {
-                'foo': mysql_url_1,
-                'bar': mysql_url_2,
-            })
+            uri=mysql_url, binds={'foo': mysql_url_1, 'bar': mysql_url_2,}
+        )
 
         self._application = mock.Mock()
         self._application.settings = {'db': db}

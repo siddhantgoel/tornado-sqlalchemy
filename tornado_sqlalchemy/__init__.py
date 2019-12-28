@@ -11,12 +11,7 @@ from tornado.concurrent import Future, chain_future
 from tornado.ioloop import IOLoop
 from tornado.web import Application
 
-__all__ = (
-    'as_future',
-    'SessionMixin',
-    'set_max_workers',
-    'SQLAlchemy'
-)
+__all__ = ('as_future', 'SessionMixin', 'set_max_workers', 'SQLAlchemy')
 
 
 class MissingFactoryError(Exception):
@@ -138,9 +133,12 @@ class SessionEx(Session):
         bind = options.pop('bind', None) or db.engine
         binds = options.pop('binds', db.get_binds())
 
-        Session.__init__(
-            self, autocommit=autocommit, autoflush=autoflush,
-            bind=bind, binds=binds, **options
+        super().__init__(
+            autocommit=autocommit,
+            autoflush=autoflush,
+            bind=bind,
+            binds=binds,
+            **options
         )
 
     def get_bind(self, mapper=None, clause=None):
@@ -165,20 +163,23 @@ class SessionEx(Session):
 
 class BindMeta(DeclarativeMeta):
     def __init__(cls, name, bases, d):
-        bind_key = (
-            d.pop('__bind_key__', None)
-            or getattr(cls, '__bind_key__', None)
+        bind_key = d.pop('__bind_key__', None) or getattr(
+            cls, '__bind_key__', None
         )
 
         super(BindMeta, cls).__init__(name, bases, d)
 
-        if bind_key is not None and getattr(cls, '__table__', None) is not None:
+        if (
+            bind_key is not None
+            and getattr(cls, '__table__', None) is not None
+        ):
             cls.__table__.info['bind_key'] = bind_key
 
 
 class SQLAlchemy:
-
-    def __init__(self, uri=None, binds=None, session_options=None, engine_options=None):
+    def __init__(
+        self, uri=None, binds=None, session_options=None, engine_options=None
+    ):
 
         self.Model = self.make_declarative_base()
         self._engines = {}
@@ -187,16 +188,20 @@ class SQLAlchemy:
             uri=uri,
             binds=binds,
             session_options=session_options,
-            engine_options=engine_options
+            engine_options=engine_options,
         )
 
-    def configure(self, uri=None, binds=None, session_options=None, engine_options=None):
+    def configure(
+        self, uri=None, binds=None, session_options=None, engine_options=None
+    ):
 
         self.uri = uri
         self.binds = binds or {}
         self._engine_options = engine_options or {}
 
-        self.sessionmaker = sessionmaker(class_=SessionEx, db=self, **(session_options or {}))
+        self.sessionmaker = sessionmaker(
+            class_=SessionEx, db=self, **(session_options or {})
+        )
 
     @property
     def engine(self):

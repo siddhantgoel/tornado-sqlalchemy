@@ -47,6 +47,7 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
         with self.make_session() as session:
             session.add(User(username='b'))
             session.add(Foo(foo='foo'))
+            session.commit()
             count = yield as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
@@ -55,9 +56,9 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
 class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
     async def get(self):
         with self.make_session() as session:
-            print(session)
             session.add(User(username='c'))
             session.add(Foo(foo='d'))
+            session.commit()
             count = await as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))

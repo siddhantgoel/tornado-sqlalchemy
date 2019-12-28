@@ -284,10 +284,5 @@ class SQLAlchemy:
         """
         self._execute_for_all_tables(bind, 'drop_all')
 
-    def reflect(self, bind='__all__'):
-        """Reflects tables from the database.
-        """
-        self._execute_for_all_tables(bind, 'reflect', skip_tables=True)
-
     def make_declarative_base(self):
         return declarative_base(metaclass=BindMeta)

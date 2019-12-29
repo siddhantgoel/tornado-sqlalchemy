@@ -56,7 +56,6 @@ class MultiDatabasesTestCase(TestCase):
 
     def tearDown(self, *args, **kwargs):
         db.drop_all()
-
         db.Model2.metadata.drop_all(db.get_engine('bar'))
 
         super(MultiDatabasesTestCase, self).tearDown(*args, **kwargs)
@@ -78,7 +77,6 @@ class MultiDatabasesTestCase(TestCase):
 
         assert user_count == 2
         assert foo_count == 1
-
 
     def test_multiple_bases(self):
         session = db.sessionmaker()

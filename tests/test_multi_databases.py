@@ -48,20 +48,22 @@ class MultiDatabasesTestCase(TestCase):
 
         session.add(Foo('foo'))
         session.commit()
+
+        session.add(Bar('first bar'))
+        session.add(Bar('second bar'))
+        session.commit()
+
         foo_count = (
             db.get_engine('foo')
             .execute("SELECT COUNT(*) FROM foo")
             .fetchone()[0]
         )
-
-        session.add(Bar('first bar'))
-        session.add(Bar('second bar'))
-        session.commit()
         bar_count = (
             db.get_engine('bar')
             .execute("SELECT COUNT(*) FROM bar")
             .fetchone()[0]
         )
+
         session.close()
 
         assert foo_count == 1

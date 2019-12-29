@@ -11,44 +11,35 @@ os.environ['ASYNC_TEST_TIMEOUT'] = '100'
 
 
 class ConcurrencyTestCase(AsyncTestCase):
-    session_count = 3
-    sleep_duration = 1
+    session_count = 10
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        db.configure(uri=mysql_url, engine_options={'echo': True})
+        db.configure(uri=mysql_url)
+
         self.application = mock.Mock()
         self.application.settings = {'db': db}
 
     def setUp(self) -> None:
         super().setUp()
+
         db.create_all()
 
     def tearDown(self) -> None:
         db.drop_all()
+
         super().tearDown()
-
-    def test_echo(self):
-        session = db.sessionmaker()
-        count = session.query(User).count()
-        session.close()
-
-        assert count == 0
 
     @gen_test
     def test_concurrent_requests_using_yield(self):
         sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
-        yield [
-            as_future(
-                lambda: session.execute(
-                    'SELECT sleep(:duration)',
-                    {'duration': self.sleep_duration},
-                )
-            )
-            for session in sessions
-        ]
+        for index, session in enumerate(sessions):
+            session.add(User('User #{}'.format(index)))
+        session.commit()
+
+        yield [as_future(session.query(User).count) for session in sessions]
 
         for session in sessions:
             session.close()
@@ -57,13 +48,12 @@ class ConcurrencyTestCase(AsyncTestCase):
     async def test_concurrent_requests_using_async(self):
         sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
+        for index, session in enumerate(sessions):
+            session.add(User('User #{}'.format(index)))
+        session.commit()
+
         for session in sessions:
-            await as_future(
-                lambda: session.execute(
-                    'SELECT sleep(:duration)',
-                    {'duration': self.sleep_duration},
-                )
-            )
+            await as_future(session.query(User).count)
 
         for session in sessions:
             session.close()

@@ -9,7 +9,7 @@ v0.6.1
 
 v0.5.0
 ------
-- Avoid initialization the pool executor at import time
+- Avoid initializing the pool executor at import time
 - Drop support for Python 3.3 and 3.4
 - Improve documentation and example code
 

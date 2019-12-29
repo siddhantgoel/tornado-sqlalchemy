@@ -2,12 +2,12 @@ from tornado.gen import coroutine
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application, RequestHandler
 
-from tornado_sqlalchemy import SessionMixin, as_future, make_session_factory
+from tornado_sqlalchemy import SessionMixin, as_future
 
-from ._common import User, Base, postgres_url
+from ._common import BaseTestCase, User, mysql_url, db
 
 
-class RequestHandlersTestCase(AsyncHTTPTestCase):
+class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
     def __init__(self, *args, **kwargs):
         super(RequestHandlersTestCase, self).__init__(*args, **kwargs)
 
@@ -55,20 +55,9 @@ class RequestHandlersTestCase(AsyncHTTPTestCase):
             (r'/without-mixin', WithoutMixinRequestHandler),
         )
 
-        self._factory = make_session_factory(postgres_url)
-        self._application = Application(
-            handlers, session_factory=self._factory
-        )
+        db.configure(uri=mysql_url)
 
-    def setUp(self, *args, **kwargs):
-        super(RequestHandlersTestCase, self).setUp(*args, **kwargs)
-
-        Base.metadata.create_all(self._factory.engine)
-
-    def tearDown(self, *args, **kwargs):
-        Base.metadata.drop_all(self._factory.engine)
-
-        super(RequestHandlersTestCase, self).tearDown(*args, **kwargs)
+        self._application = Application(handlers, db=db)
 
     def get_app(self):
         return self._application

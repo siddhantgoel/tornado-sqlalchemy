@@ -131,3 +131,4 @@ dmypy.json
 *.sqlite3
 
 # End of https://www.gitignore.io/api/python
+.idea/

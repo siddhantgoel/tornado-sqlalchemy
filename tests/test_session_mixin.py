@@ -1,8 +1,8 @@
 from unittest.mock import Mock
 
-from tornado_sqlalchemy import MissingFactoryError, SessionMixin
+from tornado_sqlalchemy import MissingDatabaseSettingError, SessionMixin
 
-from ._common import BaseTestCase, User
+from ._common import BaseTestCase, User, db
 
 
 class SessionMixinTestCase(BaseTestCase):
@@ -10,7 +10,7 @@ class SessionMixinTestCase(BaseTestCase):
         class GoodHandler(SessionMixin):
             def __init__(h_self):
                 h_self.application = Mock()
-                h_self.application.settings = {'session_factory': self.factory}
+                h_self.application.settings = {'db': db}
 
             def run(h_self):
                 with h_self.make_session() as session:
@@ -28,15 +28,17 @@ class SessionMixinTestCase(BaseTestCase):
                 with h_self.make_session() as session:
                     return session.query(User).count()
 
-        self.assertRaises(MissingFactoryError, BadHandler().run)
+        self.assertRaises(MissingDatabaseSettingError, BadHandler().run)
 
     def test_distinct_sessions(self):
         sessions = set()
 
         class Handler(SessionMixin):
             def __init__(h_self):
+                db.configure(uri=self.db_uri)
+
                 h_self.application = Mock()
-                h_self.application.settings = {'session_factory': self.factory}
+                h_self.application.settings = {'db': db}
 
             def run(h_self):
                 session = h_self.session

@@ -1,5 +1,4 @@
 import os
-import time
 from unittest import mock
 
 from tornado.testing import AsyncTestCase, gen_test

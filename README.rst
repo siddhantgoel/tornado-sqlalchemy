@@ -96,6 +96,6 @@ installed.
    tests/`.
 
 .. _Poetry: https://poetry.eustace.io/
-.. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io
+.. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io/en/stable/
 .. _SQLAlchemy: http://www.sqlalchemy.org/
-.. _tornado: http://tornadoweb.org
+.. _tornado: https://www.tornadoweb.org/en/stable/

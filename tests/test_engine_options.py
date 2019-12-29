@@ -41,7 +41,6 @@ class ConcurrencyTestCase(AsyncTestCase):
     def test_concurrent_requests_using_yield(self):
         sessions = [db.sessionmaker() for _ in range(self.session_count)]
 
-        t = time.time()
         yield [
             as_future(
                 lambda: session.execute(
@@ -52,16 +51,12 @@ class ConcurrencyTestCase(AsyncTestCase):
             for session in sessions
         ]
 
-        print('yield:', time.time() - t)
-
         for session in sessions:
             session.close()
 
     @gen_test
     async def test_concurrent_requests_using_async(self):
         sessions = [db.sessionmaker() for _ in range(self.session_count)]
-
-        t = time.time()
 
         for session in sessions:
             await as_future(
@@ -71,6 +66,5 @@ class ConcurrencyTestCase(AsyncTestCase):
                 )
             )
 
-        print('await:', time.time() - t)
         for session in sessions:
             session.close()

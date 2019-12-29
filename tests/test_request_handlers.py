@@ -59,12 +59,6 @@ class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
 
         self._application = Application(handlers, db=db)
 
-    def setUp(self, *args, **kwargs):
-        super(RequestHandlersTestCase, self).setUp(*args, **kwargs)
-
-    def tearDown(self, *args, **kwargs):
-        super(RequestHandlersTestCase, self).tearDown(*args, **kwargs)
-
     def get_app(self):
         return self._application
 

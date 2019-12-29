@@ -26,9 +26,9 @@ class Bar(db.Model):
         self.bar = bar
 
 
-class MultiDatabasesTestCase(TestCase):
+class MultipleDatabasesTestCase(TestCase):
     def setUp(self, *args, **kwargs):
-        super(MultiDatabasesTestCase, self).setUp(*args, **kwargs)
+        super(MultipleDatabasesTestCase, self).setUp(*args, **kwargs)
 
         db.configure(
             uri=mysql_url, binds={'foo': mysql_url_1, 'bar': mysql_url_2}
@@ -41,7 +41,8 @@ class MultiDatabasesTestCase(TestCase):
 
     def tearDown(self, *args, **kwargs):
         db.drop_all()
-        super(MultiDatabasesTestCase, self).tearDown(*args, **kwargs)
+
+        super(MultipleDatabasesTestCase, self).tearDown(*args, **kwargs)
 
     def test_add_objects(self):
         session = db.sessionmaker()
@@ -66,5 +67,5 @@ class MultiDatabasesTestCase(TestCase):
 
         session.close()
 
-        assert foo_count == 1
-        assert bar_count == 2
+        self.assertEqual(foo_count, 1)
+        self.assertEqual(bar_count, 2)

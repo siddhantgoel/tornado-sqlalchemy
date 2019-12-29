@@ -18,9 +18,9 @@ class UserInBar(db.Model2):
         self.username = username
 
 
-class MultiDatabasesTestCase(TestCase):
+class MultipleBasesTestCase(TestCase):
     def setUp(self, *args, **kwargs):
-        super(MultiDatabasesTestCase, self).setUp(*args, **kwargs)
+        super(MultipleBasesTestCase, self).setUp(*args, **kwargs)
 
         db.configure(uri=mysql_url, binds={'bar': mysql_url_2})
 
@@ -34,7 +34,7 @@ class MultiDatabasesTestCase(TestCase):
         db.drop_all()
         db.Model2.metadata.drop_all(db.get_engine('bar'))
 
-        super(MultiDatabasesTestCase, self).tearDown(*args, **kwargs)
+        super(MultipleBasesTestCase, self).tearDown(*args, **kwargs)
 
     def test_multiple_bases(self):
         session = db.sessionmaker()
@@ -52,6 +52,6 @@ class MultiDatabasesTestCase(TestCase):
 
         session.close()
 
-        assert user_count_1 == 2
-        assert user_in_bar_count == 1
-        assert user_count_2 == 2
+        self.assertEqual(user_count_1, 2)
+        self.assertEqual(user_in_bar_count, 1)
+        self.assertEqual(user_count_2, 2)

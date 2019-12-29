@@ -1,6 +1,10 @@
 CHANGELOG
 =========
 
+v0.7.0 (under development)
+--------------------------
+- Support for multiple databases (thanks `@dingyaguang117`_)
+
 v0.6.1
 ------
 - Pass :code:`SessionMixin` arguments directly to :code:`create_engine`
@@ -63,3 +67,6 @@ v0.2.0
 v0.1.1
 ------
 - Initial release
+
+
+.. _@dingyaguang117: https://github.com/dingyaguang117

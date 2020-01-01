@@ -1,12 +1,8 @@
 from tornado.gen import coroutine
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application, RequestHandler
-
-
-from ._common import BaseTestCase, User, mysql_url, db
-
-
 from tornado_sqlalchemy import SessionMixin
+from ._common import BaseTestCase, User, mysql_url, db
 
 
 class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):

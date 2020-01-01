@@ -23,6 +23,10 @@ Installation
 
     $ pip install tornado-sqlalchemy
 
+In case you prefer installing from the Github repository, please note that
+:code:`master` is the development branch so :code:`stable` is what you should be
+installing from.
+
 Usage
 -----
 
@@ -35,7 +39,7 @@ Usage
     class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
         async def get(self):
             with self.make_session() as session:
-                count = await as_future(session.query(UserModel).count)
+                count = await as_future(session.query(User).count)
 
             self.write('{} users so far!'.format(count))
 
@@ -43,14 +47,14 @@ Usage
         @coroutine
         def get(self):
             with self.make_session() as session:
-                count = yield as_future(session.query(UserModel).count)
+                count = yield as_future(session.query(User).count)
 
             self.write('{} users so far!'.format(count))
 
     class SynchronousRequestHandler(SessionMixin, RequestHandler):
         def get(self):
             with self.make_session() as session:
-                count = session.query(UserModel).count()
+                count = session.query(User).count()
 
             self.write('{} users so far!'.format(count))
 
@@ -83,10 +87,15 @@ installed.
 2. Install the packages required for development -
    :code:`poetry install`
 
-3. That's basically it. You should now be able to run the test suite -
-   :code:`poetry run py.test tests/`.
+3. That should basically be it. Some tests rely on :code:`PostgreSQL` and
+   :code:`MySQL`, so depending on which tests you run, setting those up could
+   also be necessary. The required SQL scripts that setup the databases/owners
+   are in the :code:`tests/travis/` folder.
+
+4. You should now be able to run the test suite - :code:`poetry run py.test
+   tests/`.
 
 .. _Poetry: https://poetry.eustace.io/
-.. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io
+.. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io/en/stable/
 .. _SQLAlchemy: http://www.sqlalchemy.org/
-.. _tornado: http://tornadoweb.org
+.. _tornado: https://www.tornadoweb.org/en/stable/

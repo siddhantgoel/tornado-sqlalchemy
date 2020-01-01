@@ -26,5 +26,6 @@ before_script:
     - mysql --user=root --password=''  < tests/travis/my.sql
 
 script:
-    - poetry run flake8
-    - poetry run py.test tests/
+    - make lint-flake8
+    - if [[ $TRAVIS_PYTHON_VERSION != '3.5' ]]; then make lint-black; fi
+    - make test

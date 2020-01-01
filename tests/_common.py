@@ -1,7 +1,7 @@
 from unittest import TestCase, mock
-from sqlalchemy import BigInteger, Column, String
 from tornado.gen import coroutine, Return
 from tornado_sqlalchemy import SQLAlchemy, as_future
+from sqlalchemy import BigInteger, Column, String
 
 
 postgres_url = 'postgresql://t_sa:t_sa@localhost/t_sa'

@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from tornado.gen import coroutine
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application, RequestHandler
@@ -65,27 +67,28 @@ class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
     def test_gen_coroutines(self):
         response = self.fetch('/gen-coroutines', method='GET')
 
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, HTTPStatus.OK.value)
         self.assertEqual(response.body.decode('utf-8'), '0')
 
     def test_native_coroutines(self):
         response = self.fetch('/native-coroutines', method='GET')
 
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, HTTPStatus.OK.value)
         self.assertEqual(response.body.decode('utf-8'), '0')
 
     def test_with_mixin(self):
         response = self.fetch('/with-mixin', method='GET')
 
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, HTTPStatus.OK.value)
         self.assertEqual(response.body.decode('utf-8'), '1')
 
     def test_without_mixin(self):
         response = self.fetch('/without-mixin', method='GET')
-        self.assertEqual(response.code, 500)
+
+        self.assertEqual(response.code, HTTPStatus.INTERNAL_SERVER_ERROR.value)
 
     def test_uses_self_session(self):
         response = self.fetch('/uses-self-session', method='GET')
 
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, HTTPStatus.OK.value)
         self.assertEqual(response.body.decode('utf-8'), '0')

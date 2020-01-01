@@ -1,8 +1,7 @@
 from unittest import TestCase, mock
-
 from sqlalchemy import BigInteger, Column, String
-
-from tornado_sqlalchemy import SQLAlchemy
+from tornado.gen import coroutine, Return
+from tornado_sqlalchemy import SQLAlchemy, as_future
 
 
 postgres_url = 'postgresql://t_sa:t_sa@localhost/t_sa'
@@ -25,6 +24,20 @@ class User(db.Model):
 
     def __init__(self, username):
         self.username = username
+
+    @classmethod
+    def count(cls):
+        return db.session.query(cls).count()
+
+    @classmethod
+    async def count_async(cls):
+        return await as_future(db.session.query(cls).count)
+
+    @classmethod
+    @coroutine
+    def count_gen_async(cls):
+        count = yield as_future(db.session.query(cls).count)
+        raise Return(count)
 
 
 class BaseTestCase(TestCase):

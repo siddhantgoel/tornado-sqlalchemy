@@ -1,11 +1,12 @@
 import multiprocessing
+import contextvars
 from concurrent.futures import Executor, ThreadPoolExecutor
 from contextlib import contextmanager
 from typing import Callable, Iterator, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.orm.session import Session
 from tornado.concurrent import Future, chain_future
 from tornado.ioloop import IOLoop
@@ -68,6 +69,10 @@ class SessionMixin:
     _session = None  # type: Optional[Session]
     application = None  # type: Optional[Application]
 
+    def prepare(self):
+        # set request_id for scoped_session
+        self.application.settings['db'].request_id.set(str(id(self.request)))
+
     @contextmanager
     def make_session(self) -> Iterator[Session]:
         session = None
@@ -93,6 +98,9 @@ class SessionMixin:
             next_on_finish = super(SessionMixin, self).on_finish
         except AttributeError:
             pass
+
+        # close session created by db.session
+        self.application.settings['db'].session.close()
 
         if self._session:
             self._session.commit()
@@ -190,6 +198,8 @@ class SQLAlchemy:
             engine_options=engine_options,
         )
 
+        self.request_id = contextvars.ContextVar('request_id')
+
     def configure(
         self, uri=None, binds=None, session_options=None, engine_options=None
     ):
@@ -200,6 +210,10 @@ class SQLAlchemy:
         self.sessionmaker = sessionmaker(
             class_=SessionEx, db=self, **(session_options or {})
         )
+        self.session = scoped_session(self.sessionmaker, scopefunc=self._scopefunc)
+
+    def _scopefunc(self):
+        return self.request_id.get()
 
     @property
     def engine(self):

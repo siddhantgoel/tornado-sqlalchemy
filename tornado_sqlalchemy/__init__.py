@@ -210,7 +210,9 @@ class SQLAlchemy:
         self.sessionmaker = sessionmaker(
             class_=SessionEx, db=self, **(session_options or {})
         )
-        self.session = scoped_session(self.sessionmaker, scopefunc=self._scopefunc)
+        self.session = scoped_session(
+            self.sessionmaker, scopefunc=self._scopefunc
+        )
 
     def _scopefunc(self):
         return self.request_id.get()

@@ -6,9 +6,7 @@ from tornado.web import Application, RequestHandler
 from ._common import BaseTestCase, User, mysql_url, db
 
 
-from tornado_sqlalchemy import (
-    SessionMixin,
-)
+from tornado_sqlalchemy import SessionMixin
 
 
 class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):

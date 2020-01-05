@@ -29,9 +29,9 @@ class User(db.Model):
 
 class BaseTestCase(TestCase):
     def setUp(self):
-        self.db_uri = mysql_url
+        self.db_url = mysql_url
 
-        db.configure(uri=mysql_url)
+        db.configure(url=mysql_url)
 
         self.application = mock.Mock()
         self.application.settings = {'db': db}

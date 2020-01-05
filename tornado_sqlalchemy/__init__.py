@@ -178,22 +178,22 @@ class BindMeta(DeclarativeMeta):
 
 class SQLAlchemy:
     def __init__(
-        self, uri=None, binds=None, session_options=None, engine_options=None
+        self, url=None, binds=None, session_options=None, engine_options=None
     ):
         self.Model = self.make_declarative_base()
         self._engines = {}
 
         self.configure(
-            uri=uri,
+            url=url,
             binds=binds,
             session_options=session_options,
             engine_options=engine_options,
         )
 
     def configure(
-        self, uri=None, binds=None, session_options=None, engine_options=None
+        self, url=None, binds=None, session_options=None, engine_options=None
     ):
-        self.uri = uri
+        self.url = url
         self.binds = binds or {}
         self._engine_options = engine_options or {}
 
@@ -210,17 +210,17 @@ class SQLAlchemy:
         return self.Model.metadata
 
     def create_engine(self, bind=None):
-        if not self.uri and not self.binds:
+        if not self.url and not self.binds:
             raise MissingDatabaseSettingError()
 
         if bind is None:
-            uri = self.uri
+            url = self.url
         else:
             if bind not in self.binds:
                 raise RuntimeError('bind {} undefined.'.format(bind))
-            uri = self.binds[bind]
+            url = self.binds[bind]
 
-        return create_engine(uri, **self._engine_options)
+        return create_engine(url, **self._engine_options)
 
     def get_engine(self, bind=None):
         """Returns a specific engine. cached in self._engines """

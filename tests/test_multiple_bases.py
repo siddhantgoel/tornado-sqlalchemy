@@ -36,7 +36,7 @@ class MultipleBasesTestCase(TestCase):
         super(MultipleBasesTestCase, self).setUp(*args, **kwargs)
 
         db.configure(
-            uri=mysql_url, binds={'foo': mysql_url_1, 'bar': mysql_url_2}
+            url=mysql_url, binds={'foo': mysql_url_1, 'bar': mysql_url_2}
         )
 
         self._application = mock.Mock()

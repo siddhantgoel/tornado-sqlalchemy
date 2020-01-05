@@ -57,7 +57,7 @@ class RequestHandlersTestCase(AsyncHTTPTestCase, BaseTestCase):
             (r'/without-mixin', WithoutMixinRequestHandler),
         )
 
-        db.configure(uri=mysql_url)
+        db.configure(url=mysql_url)
 
         self._application = Application(handlers, db=db)
 

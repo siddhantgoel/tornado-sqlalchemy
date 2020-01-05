@@ -16,7 +16,7 @@ class ConcurrencyTestCase(AsyncTestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        db.configure(uri=mysql_url)
+        db.configure(url=mysql_url)
 
         self.application = mock.Mock()
         self.application.settings = {'db': db}

@@ -52,7 +52,7 @@ if __name__ == '__main__':
 
     assert options.database_url, "Need a database URL"
 
-    db.configure(uri=options.database_url)
+    db.configure(url=options.database_url)
 
     app = Application(
         [

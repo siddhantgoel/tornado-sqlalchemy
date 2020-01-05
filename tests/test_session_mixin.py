@@ -35,7 +35,7 @@ class SessionMixinTestCase(BaseTestCase):
 
         class Handler(SessionMixin):
             def __init__(h_self):
-                db.configure(uri=self.db_uri)
+                db.configure(url=self.db_url)
 
                 h_self.application = Mock()
                 h_self.application.settings = {'db': db}

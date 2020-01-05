@@ -10,8 +10,8 @@ tornado-sqlalchemy
 .. image:: https://img.shields.io/pypi/pyversions/tornado-sqlalchemy.svg
     :target: https://pypi.python.org/pypi/tornado-sqlalchemy
 
-**tornado-sqlalchemy** is a Python library aimed at providing a set of helpers
-for using the SQLAlchemy_ database toolkit in tornado_ web applications.
+**tornado-sqlalchemy** is a Python library aimed at providing support for using
+the SQLAlchemy_ database toolkit in tornado_ web applications.
 
 Installation
 ------------

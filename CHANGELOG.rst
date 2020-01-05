@@ -1,9 +1,11 @@
 CHANGELOG
 =========
 
-v0.7.0 (under development)
---------------------------
+v0.7.0
+------
 - Support for multiple databases (thanks `@dingyaguang117`_)
+- Drop :code:`session_factory` and :code:`make_session_factory` in favor of the
+  new :code:`SQLAlchemy` object
 
 v0.6.1
 ------

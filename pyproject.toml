@@ -19,7 +19,7 @@ classifiers = [
 include = ["README.rst", "LICENSE.txt"]
 keywords = ["databases", "tornado", "sqlalchemy"]
 repository = "https://github.com/siddhantgoel/tornado-sqlalchemy"
-documentation = "https://github.com/siddhantgoel/tornado-sqlalchemy"
+documentation = "https://tornado-sqlalchemy.readthedocs.io/en/stable/"
 
 [tool.poetry.dependencies]
 python = "^3.5"

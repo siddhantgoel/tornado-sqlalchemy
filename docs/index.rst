@@ -189,7 +189,7 @@ Migrations (using Alembic)
 Database migrations are supported using Alembic_.
 
 The one piece of configuration that Alembic expects to auto-generate migrations
-is the :code:`MetaData`_ object that your app is using. This is provided by the
+is the |MetaData| object that your app is using. This is provided by the
 :code:`db.metadata` property.
 
 .. code-block:: python
@@ -205,12 +205,14 @@ is the :code:`MetaData`_ object that your app is using. This is provided by the
 Other than that, the normal Alembic `configuration instructions`_ apply.
 
 .. _alembic: http://alembic.sqlalchemy.org/en/latest/
-.. _Alembic: https://alembic.sqlalchemy.org/en/latest/
 .. _configuration instructions: https://alembic.sqlalchemy.org/en/latest/tutorial.html
 .. _examples/basic.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/basic.py
 .. _examples/multiple-databases.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/multiple-databases.py
 .. _Future: http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 .. _MetaData: https://docs.sqlalchemy.org/en/13/core/metadata.html#sqlalchemy.schema.MetaData
+.. |MetaData| replace:: ``MetaData``
 .. _poorly suited for explicit asynchronous programming: https://stackoverflow.com/a/16503103/179729
 .. _Query: http://docs.sqlalchemy.org/en/latest/orm/query.html#sqlalchemy.orm.query.Query
+.. _SQLAlchemy: https://www.sqlalchemy.org/
 .. _standardized library: https://xkcd.com/927/
+.. _tornado: https://www.tornadoweb.org/en/stable/

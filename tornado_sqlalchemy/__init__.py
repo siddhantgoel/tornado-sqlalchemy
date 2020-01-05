@@ -143,9 +143,9 @@ class SessionEx(Session):
 
     def get_bind(self, mapper=None, clause=None):
         """Return the engine or connection for a given model or
-        table, using the ``__bind_key__`` if it is set.
+        table, using the `__bind_key__` if it is set.
         """
-        # mapper is None if someone tries to just get a connection
+
         if mapper is not None:
             try:
                 # SA >= 1.3
@@ -156,8 +156,10 @@ class SessionEx(Session):
 
             info = getattr(persist_selectable, 'info', {})
             bind_key = info.get('bind_key')
+
             if bind_key is not None:
                 return self.db.get_engine(bind=bind_key)
+
         return super().get_bind(mapper, clause)
 
 
@@ -234,11 +236,11 @@ class SQLAlchemy:
 
     def get_tables_for_bind(self, bind=None):
         """Returns a list of all tables relevant for a bind."""
-        result = []
-        for table in self.Model.metadata.tables.values():
-            if table.info.get('bind_key') == bind:
-                result.append(table)
-        return result
+        return [
+            table
+            for table in self.Model.metadata.tables.values()
+            if table.info.get('bind_key') == bind
+        ]
 
     def get_binds(self):
         """Returns a dictionary with a table->engine mapping.
@@ -246,12 +248,16 @@ class SQLAlchemy:
         This is suitable for use of sessionmaker(binds=db.get_binds()).
         """
         binds = [None] + list(self.binds)
-        retval = {}
+
+        result = {}
+
         for bind in binds:
             engine = self.get_engine(bind)
             tables = self.get_tables_for_bind(bind)
-            retval.update(dict((table, engine) for table in tables))
-        return retval
+
+            result.update(dict((table, engine) for table in tables))
+
+        return result
 
     def _execute_for_all_tables(self, bind, operation, skip_tables=False):
         if bind == '__all__':
@@ -263,9 +269,11 @@ class SQLAlchemy:
 
         for bind in binds:
             extra = {}
+
             if not skip_tables:
                 tables = self.get_tables_for_bind(bind)
                 extra['tables'] = tables
+
             op = getattr(self.Model.metadata, operation)
             op(bind=self.get_engine(bind), **extra)
 

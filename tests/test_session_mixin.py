@@ -18,7 +18,7 @@ class SessionMixinTestCase(BaseTestCase):
 
         self.assertEqual(GoodHandler().run(), 0)
 
-    def test_mixin_no_session_factory(self):
+    def test_mixin_no_db(self):
         class BadHandler(SessionMixin):
             def __init__(h_self):
                 h_self.application = Mock()

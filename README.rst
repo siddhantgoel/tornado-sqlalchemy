@@ -34,7 +34,7 @@ Usage
 
     from tornado.gen import coroutine
     from tornado.web import Application, RequestHandler
-    from tornado_sqlalchemy import as_future, make_session_factory, SessionMixin
+    from tornado_sqlalchemy import as_future, SessionMixin, SQLAlchemy
 
     class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
         async def get(self):
@@ -66,7 +66,7 @@ Usage
 
     app = Application(
        handlers,
-       session_factory=make_session_factory('postgres://user:password@host/database')
+       db=SQLAlchemy('postgres://user:password@host/database')
     )
 
 Documentation

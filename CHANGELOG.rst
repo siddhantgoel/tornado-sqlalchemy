@@ -3,9 +3,16 @@ CHANGELOG
 
 v0.7.0
 ------
-- Support for multiple databases (thanks `@dingyaguang117`_)
-- Drop :code:`session_factory` and :code:`make_session_factory` in favor of the
-  new :code:`SQLAlchemy` object
+- Support for multiple databases (thanks `@dingyaguang117`_!)
+
+  1. Drop :code:`session_factory` and :code:`make_session_factory` in favor of
+     the new :code:`SQLAlchemy` instance
+  2. Drop :code:`declarative_base` in favor of the new :code:`SQLAlchemy.Model`
+     property
+  3. Allow models to be associated to separate databases using
+     :code:`__bind_key__`
+
+- [Please refer to `UPGRADING.rst`_ for help with upgrading.]
 
 v0.6.1
 ------
@@ -72,3 +79,4 @@ v0.1.1
 
 
 .. _@dingyaguang117: https://github.com/dingyaguang117
+.. _UPGRADING.rst: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/UPGRADING.rst

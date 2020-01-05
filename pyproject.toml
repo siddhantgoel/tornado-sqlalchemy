@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tornado-sqlalchemy"
-version = "0.6.1"
+version = "0.7.0"
 description = "SQLAlchemy support for Tornado"
 authors = ["Siddhant Goel <me@sgoel.org>"]
 license = "MIT"

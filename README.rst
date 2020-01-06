@@ -78,8 +78,10 @@ Documentation is available at `Read The Docs`_.
 Development
 -----------
 
-To work on this package, please make sure you have Python 3.5+ and Poetry_
-installed.
+Please make sure you have Python 3.5+ and Poetry_ installed.
+
+Since we run tests against multiple databases (currently MySQL, PostgreSQL, and
+SQLite), we use `docker-compose`_ to make our lives easier.
 
 1. Git clone the repository -
    :code:`git clone https://github.com/siddhantgoel/tornado-sqlalchemy`
@@ -87,14 +89,13 @@ installed.
 2. Install the packages required for development -
    :code:`poetry install`
 
-3. That should basically be it. Some tests rely on :code:`PostgreSQL` and
-   :code:`MySQL`, so depending on which tests you run, setting those up could
-   also be necessary. The required SQL scripts that setup the databases/owners
-   are in the :code:`tests/travis/` folder.
+3. Ensure that the MySQL and PostgreSQL services (containers) are up -
+   :code:`docker-compose up -d`
 
-4. You should now be able to run the test suite - :code:`poetry run py.test
-   tests/`.
+4. That should basically be it. You should now be able to run the test suite -
+   :code:`poetry run py.test tests/`.
 
+.. _docker-compose: https://docs.docker.com/compose/
 .. _Poetry: https://poetry.eustace.io/
 .. _Read The Docs: https://tornado-sqlalchemy.readthedocs.io/en/stable/
 .. _SQLAlchemy: http://www.sqlalchemy.org/

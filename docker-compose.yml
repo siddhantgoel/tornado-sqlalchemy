@@ -1,0 +1,19 @@
+version: '3'
+services:
+    postgres:
+        image: postgres:12
+        restart: always
+        volumes:
+            - ./docker/provision/postgres/init:/docker-entrypoint-initdb.d
+        ports:
+            - "5432:5432"
+    mysql:
+        image: mysql:8
+        command: --default-authentication-plugin=mysql_native_password
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: t_sa
+        volumes:
+            - ./docker/provision/mysql/init:/docker-entrypoint-initdb.d
+        ports:
+            - "3306:3306"

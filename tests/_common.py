@@ -5,11 +5,11 @@ from sqlalchemy import BigInteger, Column, String
 from tornado_sqlalchemy import SQLAlchemy
 
 
-postgres_url = 'postgresql://t_sa:t_sa@localhost/t_sa'
+postgres_url = 'postgresql://t_sa:t_sa@127.0.0.1:5432/t_sa'
 
-mysql_url = 'mysql://t_sa:t_sa@localhost/t_sa'
-mysql_url_1 = 'mysql://t_sa:t_sa@localhost/t_sa_1'
-mysql_url_2 = 'mysql://t_sa:t_sa@localhost/t_sa_2'
+mysql_url = 'mysql+mysqldb://t_sa:t_sa@127.0.0.1:3306/t_sa'
+mysql_url_1 = 'mysql+mysqldb://t_sa:t_sa@127.0.0.1:3306/t_sa_1'
+mysql_url_2 = 'mysql+mysqldb://t_sa:t_sa@127.0.0.1:3306/t_sa_2'
 
 sqlite_url = 'sqlite:///t_sa.sqlite3'
 

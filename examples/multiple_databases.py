@@ -31,6 +31,14 @@ class Foo(db.Model):
     foo = Column(String(255))
 
 
+class Bar(db.Model):
+    __bind_key__ = 'bar'
+    __tablename__ = 'bar'
+
+    id = Column(BigInteger, primary_key=True)
+    bar = Column(String(255))
+
+
 class SynchronousRequestHandler(SessionMixin, RequestHandler):
     def get(self):
         with self.make_session() as session:
@@ -47,6 +55,7 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
         with self.make_session() as session:
             session.add(User(username='b'))
             session.add(Foo(foo='foo'))
+            session.add(Bar(bar='bar'))
             session.commit()
             count = yield as_future(session.query(User).count)
 
@@ -58,6 +67,7 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
         with self.make_session() as session:
             session.add(User(username='c'))
             session.add(Foo(foo='d'))
+            session.add(Bar(bar='e'))
             session.commit()
             count = await as_future(session.query(User).count)
 
@@ -66,10 +76,10 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
 
 if __name__ == '__main__':
     db.configure(
-        url='mysql://t_sa:t_sa@localhost/t_sa',
+        url='sqlite://',
         binds={
-            'foo': 'mysql://t_sa:t_sa@localhost/t_sa_1',
-            'bar': 'mysql://t_sa:t_sa@localhost/t_sa_2',
+            'foo': 'sqlite:///foo.db',
+            'bar': 'sqlite:///bar.db',
         },
         engine_options={
             'pool_size': 10,

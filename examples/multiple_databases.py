@@ -1,23 +1,42 @@
 from sqlalchemy import BigInteger, Column, String
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
-from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
-from tornado_sqlalchemy import SessionMixin, as_future, SQLAlchemy
+from tornado_sqlalchemy import (
+    SessionMixin,
+    as_future,
+    set_max_workers,
+    SQLAlchemy,
+)
 
 
 db = SQLAlchemy()
 
-
-define('database-url', type=str, help='Database URL')
+set_max_workers(10)
 
 
 class User(db.Model):
     __tablename__ = 'users'
 
     id = Column(BigInteger, primary_key=True)
-    username = Column(String(255), unique=True)
+    username = Column(String(255))
+
+
+class Foo(db.Model):
+    __bind_key__ = 'foo'
+    __tablename__ = 'foo'
+
+    id = Column(BigInteger, primary_key=True)
+    foo = Column(String(255))
+
+
+class Bar(db.Model):
+    __bind_key__ = 'bar'
+    __tablename__ = 'bar'
+
+    id = Column(BigInteger, primary_key=True)
+    bar = Column(String(255))
 
 
 class SynchronousRequestHandler(SessionMixin, RequestHandler):
@@ -34,6 +53,10 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
     @coroutine
     def get(self):
         with self.make_session() as session:
+            session.add(User(username='b'))
+            session.add(Foo(foo='foo'))
+            session.add(Bar(bar='bar'))
+            session.commit()
             count = yield as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
@@ -42,17 +65,28 @@ class GenCoroutinesRequestHandler(SessionMixin, RequestHandler):
 class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
     async def get(self):
         with self.make_session() as session:
+            session.add(User(username='c'))
+            session.add(Foo(foo='d'))
+            session.add(Bar(bar='e'))
+            session.commit()
             count = await as_future(session.query(User).count)
 
         self.write('{} users so far!'.format(count))
 
 
 if __name__ == '__main__':
-    parse_command_line()
-
-    assert options.database_url, "Need a database URL"
-
-    db.configure(url=options.database_url)
+    db.configure(
+        url='sqlite://',
+        binds={
+            'foo': 'sqlite:///foo.db',
+            'bar': 'sqlite:///bar.db',
+        },
+        engine_options={
+            'pool_size': 10,
+            'pool_timeout': 0,
+            'max_overflow': -1,
+        },
+    )
 
     app = Application(
         [
@@ -61,9 +95,17 @@ if __name__ == '__main__':
             (r'/native-coroutines', NativeCoroutinesRequestHandler),
         ],
         db=db,
+        autoreload=True,
     )
 
-    app.listen(8888)
+    db.create_all()
+
+    session = db.sessionmaker()
+    session.add(User(username='a'))
+    session.commit()
+    session.close()
+
     print('Listening on port 8888')
 
+    app.listen(8888)
     IOLoop.current().start()

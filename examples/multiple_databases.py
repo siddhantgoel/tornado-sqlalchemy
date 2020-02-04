@@ -77,10 +77,7 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
 if __name__ == '__main__':
     db.configure(
         url='sqlite://',
-        binds={
-            'foo': 'sqlite:///foo.db',
-            'bar': 'sqlite:///bar.db',
-        },
+        binds={'foo': 'sqlite:///foo.db', 'bar': 'sqlite:///bar.db'},
         engine_options={
             'pool_size': 10,
             'pool_timeout': 0,

@@ -78,11 +78,6 @@ if __name__ == '__main__':
     db.configure(
         url='sqlite://',
         binds={'foo': 'sqlite:///foo.db', 'bar': 'sqlite:///bar.db'},
-        engine_options={
-            'pool_size': 10,
-            'pool_timeout': 0,
-            'max_overflow': -1,
-        },
     )
 
     app = Application(
@@ -98,7 +93,7 @@ if __name__ == '__main__':
     db.create_all()
 
     session = db.sessionmaker()
-    session.add(User(username='a'))
+    session.add(User(id=1, username='a'))
     session.commit()
     session.close()
 

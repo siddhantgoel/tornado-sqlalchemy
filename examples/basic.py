@@ -1,16 +1,12 @@
 from sqlalchemy import BigInteger, Column, String
 from tornado.gen import coroutine
 from tornado.ioloop import IOLoop
-from tornado.options import define, options, parse_command_line
 from tornado.web import Application, RequestHandler
 
 from tornado_sqlalchemy import SessionMixin, as_future, SQLAlchemy
 
 
 db = SQLAlchemy()
-
-
-define('database-url', type=str, help='Database URL')
 
 
 class User(db.Model):
@@ -48,11 +44,7 @@ class NativeCoroutinesRequestHandler(SessionMixin, RequestHandler):
 
 
 if __name__ == '__main__':
-    parse_command_line()
-
-    assert options.database_url, "Need a database URL"
-
-    db.configure(url=options.database_url)
+    db.configure(url='sqlite://')
 
     app = Application(
         [

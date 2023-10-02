@@ -1,15 +1,16 @@
 import multiprocessing
-from concurrent.futures import Executor, ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from typing import Callable, Iterator, Optional
 
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base, DeclarativeMeta
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 from tornado.concurrent import Future, chain_future
 from tornado.ioloop import IOLoop
-from tornado.web import Application
+
 
 __all__ = ('as_future', 'SessionMixin', 'set_max_workers', 'SQLAlchemy')
 
@@ -159,7 +160,7 @@ class SessionEx(Session):
             if bind_key is not None:
                 return self.db.get_engine(bind=bind_key)
 
-        return super().get_bind(mapper, clause)
+        return super().get_bind(mapper=mapper, clause=clause)
 
 
 class BindMeta(DeclarativeMeta):

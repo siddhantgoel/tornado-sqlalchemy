@@ -1,7 +1,8 @@
 from http import HTTPStatus
 from unittest import TestCase, mock
 
-from sqlalchemy import Column, BigInteger, String
+from sqlalchemy import Column, BigInteger, String, text
+
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application, RequestHandler
 
@@ -60,16 +61,11 @@ class MultipleDatabasesTestCase(TestCase):
         session.add(Bar('second bar'))
         session.commit()
 
-        foo_count = (
-            db.get_engine('foo')
-            .execute("SELECT COUNT(*) FROM foo")
-            .fetchone()[0]
-        )
-        bar_count = (
-            db.get_engine('bar')
-            .execute("SELECT COUNT(*) FROM bar")
-            .fetchone()[0]
-        )
+        with db.get_engine('foo').begin() as conn:
+            foo_count = conn.execute(text("SELECT COUNT(*) FROM foo")).fetchone()[0]
+
+        with db.get_engine('bar').begin() as conn:
+            bar_count = conn.execute(text("SELECT COUNT(*) FROM bar")).fetchone()[0]
 
         session.close()
 

@@ -62,10 +62,14 @@ class MultipleDatabasesTestCase(TestCase):
         session.commit()
 
         with db.get_engine('foo').begin() as conn:
-            foo_count = conn.execute(text("SELECT COUNT(*) FROM foo")).fetchone()[0]
+            foo_count = conn.execute(
+                text("SELECT COUNT(*) FROM foo")
+            ).fetchone()[0]
 
         with db.get_engine('bar').begin() as conn:
-            bar_count = conn.execute(text("SELECT COUNT(*) FROM bar")).fetchone()[0]
+            bar_count = conn.execute(
+                text("SELECT COUNT(*) FROM bar")
+            ).fetchone()[0]
 
         session.close()
 

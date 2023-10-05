@@ -125,8 +125,7 @@ set_max_workers = _async_exec.set_max_workers
 
 
 class SessionEx(Session):
-    """The SessionEx extends the default session system with bind selection.
-    """
+    """The SessionEx extends the default session system with bind selection."""
 
     def __init__(self, db, autocommit=False, autoflush=True, **options):
         self.db = db
@@ -225,7 +224,7 @@ class SQLAlchemy:
         return create_engine(url, **self._engine_options)
 
     def get_engine(self, bind=None):
-        """Returns a specific engine. cached in self._engines """
+        """Returns a specific engine. cached in self._engines"""
         engine = self._engines.get(bind)
 
         if engine is None:
@@ -278,13 +277,11 @@ class SQLAlchemy:
             op(bind=self.get_engine(bind), **extra)
 
     def create_all(self, bind='__all__'):
-        """Creates all tables.
-        """
+        """Creates all tables."""
         self._execute_for_all_tables(bind, 'create_all')
 
     def drop_all(self, bind='__all__'):
-        """Drops all tables.
-        """
+        """Drops all tables."""
         self._execute_for_all_tables(bind, 'drop_all')
 
     def make_declarative_base(self):

@@ -26,6 +26,7 @@ documentation = "https://tornado-sqlalchemy.readthedocs.io/en/stable/"
 python = "^3.8"
 SQLAlchemy = "^1.3"
 tornado = "^6.0"
+taskipy = "^1.12.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"
@@ -39,6 +40,16 @@ sqlalchemy-stubs = "^0.2.0"
 [tool.black]
 line-length = 79
 skip-string-normalization = true
+
+[tool.taskipy.tasks]
+fmt = "black examples/ tornado_sqlalchemy/ tests/"
+
+lint-black  = "black --check examples/ tornado_sqlalchemy/ tests/"
+lint-flake8 = "flake8 examples/ tornado_sqlalchemy/ tests/"
+lint = "task lint-black && task lint-flake8"
+
+test-pytest = "pytest tests/"
+test = "task test-pytest"
 
 [build-system]
 requires = ["poetry>=0.12"]

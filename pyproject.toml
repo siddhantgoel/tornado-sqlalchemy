@@ -23,7 +23,7 @@ repository = "https://github.com/siddhantgoel/tornado-sqlalchemy"
 documentation = "https://tornado-sqlalchemy.readthedocs.io/en/stable/"
 
 [tool.poetry.dependencies]
-python = "^3.8.1"
+python = "^3.8"
 SQLAlchemy = "^2.0"
 tornado = "^6.0"
 taskipy = "^1.12.0"

@@ -17,7 +17,7 @@ classifiers = [
     "Topic :: Database",
     "Topic :: Internet :: WWW/HTTP",
 ]
-include = ["README.rst", "LICENSE.txt"]
+include = ["README.md", "LICENSE.txt"]
 keywords = ["databases", "tornado", "sqlalchemy"]
 repository = "https://github.com/siddhantgoel/tornado-sqlalchemy"
 documentation = "https://tornado-sqlalchemy.readthedocs.io/en/stable/"

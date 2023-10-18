@@ -206,8 +206,8 @@ Other than that, the normal Alembic `configuration instructions`_ apply.
 
 .. _alembic: http://alembic.sqlalchemy.org/en/latest/
 .. _configuration instructions: https://alembic.sqlalchemy.org/en/latest/tutorial.html
-.. _examples/basic.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/basic.py
-.. _examples/multiple-databases.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/examples/multiple-databases.py
+.. _examples/basic.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/main/examples/basic.py
+.. _examples/multiple-databases.py: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/main/examples/multiple-databases.py
 .. _Future: http://www.tornadoweb.org/en/stable/concurrent.html#tornado.concurrent.Future
 .. _MetaData: https://docs.sqlalchemy.org/en/13/core/metadata.html#sqlalchemy.schema.MetaData
 .. |MetaData| replace:: ``MetaData``

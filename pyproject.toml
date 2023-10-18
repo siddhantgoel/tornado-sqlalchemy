@@ -2,7 +2,7 @@
 name = "tornado-sqlalchemy"
 version = "0.7.0"
 description = "SQLAlchemy support for Tornado"
-authors = ["Siddhant Goel <me@sgoel.org>"]
+authors = ["Siddhant Goel <me@sgoel.dev>"]
 license = "MIT"
 classifiers = [
     "Development Status :: 4 - Beta",

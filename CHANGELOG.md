@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## v0.8.0
+
+- Support SQLAlchemy 2.x (thanks [@aemitos])
+
 ## v0.7.0
 
 - Support for multiple databases (thanks [@dingyaguang117])
@@ -8,7 +12,7 @@
   - Drop `declarative_base` in favor of the new `SQLAlchemy.Model` property
   - Allow models to be associated to separate databases using `__bind_key__`
 
-- [Please refer to [UPGRADING.rst] for help with upgrading.]
+- [Please refer to [UPGRADING.md] for help with upgrading.]
 
 ## v0.6.1
 
@@ -73,5 +77,6 @@
 
 - Initial release
 
+[@aemitos]: https://github.com/aemitos
 [@dingyaguang117]: https://github.com/dingyaguang117
-[UPGRADING.rst]: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/master/UPGRADING.rst
+[UPGRADING.md]: https://github.com/siddhantgoel/tornado-sqlalchemy/blob/main/UPGRADING.md

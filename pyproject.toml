@@ -34,7 +34,7 @@ flake8 = "^6.1"
 mysqlclient = "^2.2"
 psycopg2-binary = "^2.8"
 pytest = "^7.4"
-black = "^23.9"
+black = "^24.3"
 mypy = "^1.4"
 sqlalchemy-stubs = "^0.2.0"
 
